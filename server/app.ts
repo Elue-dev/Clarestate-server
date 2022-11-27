@@ -16,34 +16,3 @@ export const app = Router();
 app.use(cors());
 
 app.use(express.json({ limit: "10kb" }));
-
-app.use(cookies());
-
-app.use(xss());
-
-app.use(mongoSanitize());
-
-app.use(helmet());
-
-app.use((req, res, next) => {
-  next();
-});
-
-const limiter = rateLimit({
-  max: 100,
-  windowMs: 60 * 60 * 1000,
-  message: "Too many requests from this IP. Please try again in an hour.",
-});
-
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
-}
-
-app.use("/api/v1/users", userRouter);
-app.use("/api/v1/properties", propertyRouter);
-
-app.all("*", (req, res, next) => {
-  next(
-    new GlobalError(`Oops! Can't find ${req.originalUrl} on this server`, 404)
-  );
-});
