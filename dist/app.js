@@ -35,9 +35,9 @@ const xss_clean_1 = __importDefault(require("xss-clean"));
 const helmet_1 = __importDefault(require("helmet"));
 const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
-const globalError_1 = require("./utils/globalError");
-const propertyRoutes_1 = __importDefault(require("./routes/propertyRoutes"));
-const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
+const global_error_1 = require("./utils/global_error");
+const property_routes_1 = __importDefault(require("./routes/property_routes"));
+const user_routes_1 = __importDefault(require("./routes/user_routes"));
 exports.app = (0, express_1.Router)();
 exports.app.use((0, cors_1.default)());
 exports.app.use(express_1.default.json({ limit: "10kb" }));
@@ -56,8 +56,8 @@ const limiter = (0, express_rate_limit_1.default)({
 if (process.env.NODE_ENV === "development") {
     exports.app.use((0, morgan_1.default)("dev"));
 }
-exports.app.use("/api/v1/users", userRoutes_1.default);
-exports.app.use("/api/v1/properties", propertyRoutes_1.default);
+exports.app.use("/api/v1/users", user_routes_1.default);
+exports.app.use("/api/v1/properties", property_routes_1.default);
 exports.app.all("*", (req, res, next) => {
-    next(new globalError_1.GlobalError(`Oops! Can't find ${req.originalUrl} on this server`, 404));
+    next(new global_error_1.GlobalError(`Oops! Can't find ${req.originalUrl} on this server`, 404));
 });

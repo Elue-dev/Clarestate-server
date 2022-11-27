@@ -6,10 +6,10 @@ import xss from "xss-clean";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 import rateLimit from "express-rate-limit";
-import { GlobalError } from "./utils/globalError";
+import { GlobalError } from "./utils/global_error";
 
-import propertyRouter from "./routes/propertyRoutes";
-import userRouter from "./routes/userRoutes";
+import propertyRouter from "./routes/property_routes";
+import userRouter from "./routes/user_routes";
 
 export const app = Router();
 
