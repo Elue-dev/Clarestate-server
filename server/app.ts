@@ -10,6 +10,10 @@ import { GlobalError } from "./utils/global_error";
 
 import propertyRouter from "./routes/property_routes";
 import userRouter from "./routes/user_routes";
+import authRouter from "./routes/auth_routes";
+import reviewRouter from "./routes/review_routes";
+import commentRouter from "./routes/comment_routes";
+import contactRouter from "./routes/contact_route";
 
 export const app = Router();
 
@@ -39,8 +43,12 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-app.use("/api/v1/users", userRouter);
-app.use("/api/v1/properties", propertyRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/users", userRouter);
+app.use("/api/properties", propertyRouter);
+app.use("/api/reviews", reviewRouter);
+app.use("/api/comments", commentRouter);
+app.use("/api/contact", contactRouter);
 
 app.all("*", (req, res, next) => {
   next(
