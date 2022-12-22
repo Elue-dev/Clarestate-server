@@ -28,6 +28,8 @@ export const createAndSendToken = (
 
   res.cookie("token", token, cookieOptions);
 
+  user.password = undefined;
+
   res.status(statusCode).json({
     status: "success",
     token,
