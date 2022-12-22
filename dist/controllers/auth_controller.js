@@ -68,6 +68,9 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
 exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { code } = req.body;
     const { userID } = req.params;
+    if (!code) {
+        return next(new global_error_1.GlobalError("Please provide your verification code", 400));
+    }
     const user = yield user_model_1.default.findOne({
         _id: userID,
         codeExpires: { $gt: Date.now() },
@@ -75,13 +78,12 @@ exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(v
     if (!user) {
         return next(new global_error_1.GlobalError("Email already verified", 400));
     }
-    const decryptedCode = cryptr.decrypt(user === null || user === void 0 ? void 0 : user.verificationCode);
+    const decryptedCode = cryptr.decrypt(user.verificationCode);
     if (decryptedCode !== code) {
         return next(new global_error_1.GlobalError("Invalid or expired verification code", 400));
     }
     user.verificationCode = undefined;
     user.isVerified = true;
-    //@ts-ignore
     user.codeExpires = undefined;
     yield user.save();
     const subject = `Welcome Onboard, ${user.username}!`;

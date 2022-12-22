@@ -71,6 +71,12 @@ export const verifyCode = handleAsync(
     const { code } = req.body;
     const { userID } = req.params;
 
+    if (!code) {
+      return next(
+        new GlobalError("Please provide your verification code", 400)
+      );
+    }
+
     const user = await User.findOne({
       _id: userID,
       codeExpires: { $gt: Date.now() },
@@ -80,7 +86,7 @@ export const verifyCode = handleAsync(
       return next(new GlobalError("Email already verified", 400));
     }
 
-    const decryptedCode = cryptr.decrypt(user?.verificationCode as string);
+    const decryptedCode = cryptr.decrypt(user.verificationCode as string);
 
     if (decryptedCode !== code) {
       return next(new GlobalError("Invalid or expired verification code", 400));
@@ -88,7 +94,6 @@ export const verifyCode = handleAsync(
 
     user.verificationCode = undefined;
     user.isVerified = true;
-    //@ts-ignore
     user.codeExpires = undefined;
 
     await user.save();

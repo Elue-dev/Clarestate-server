@@ -44,7 +44,7 @@ const verificationSuccess = (username) => {
                                                     style="display:flex; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
                                                     <span style='text-align: left;'>
                                                     <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
-                                               Thank you for verifying your email! You are now ready to get started and start exploring everything that Clarestate has to offer.
+                                               Thank you for verifying your email! You are now ready to get started and explore everything that Clarestate has to offer.
                                                 </p>
                                                 <br>
                                                 <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">We hope you enjoy our services and have a nice experience with us. Feel free to reach out to us for any questions you may have.</p>
