@@ -8,5 +8,5 @@ router.post("/signup", auth_controller_1.signup);
 router.post("/login", auth_controller_1.login);
 router.post("/forgot-password", auth_controller_1.forgotPassword);
 router.post("/reset-password", auth_controller_1.resetPassword);
-router.post("/update-password", auth_middleware_1.requireAuth, auth_controller_1.updatePassword);
+router.patch("/update-password", auth_middleware_1.requireAuth, auth_controller_1.updatePassword);
 exports.default = router;
