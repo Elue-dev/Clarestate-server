@@ -40,6 +40,8 @@ const limiter = rateLimit({
   message: "Too many requests from this IP. Please try again in an hour.",
 });
 
+app.use("/api", limiter);
+
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
