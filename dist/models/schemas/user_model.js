@@ -39,6 +39,10 @@ const userSchema = new mongoose_1.default.Schema({
         default: "user",
     },
     verificationCode: String,
+    codeExpires: {
+        type: Date,
+        // required: true,
+    },
     isVerified: {
         type: Boolean,
         default: false,
@@ -48,7 +52,7 @@ const userSchema = new mongoose_1.default.Schema({
         default: true,
         select: false,
     },
-    userAgent: {
+    userAgents: {
         type: Array,
         required: true,
         default: [],

@@ -6,12 +6,14 @@ import {
   resetPassword,
   signup,
   updatePassword,
+  verifyCode,
 } from "../controllers/auth_controller";
 import { requireAuth } from "../middlewares/auth_middleware";
 
 const router = Router();
 
 router.post("/signup", signup);
+router.post("/verify-code/:email", verifyCode);
 router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);

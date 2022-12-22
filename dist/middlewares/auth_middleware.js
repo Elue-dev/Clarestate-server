@@ -16,7 +16,7 @@ exports.restrictTo = exports.requireAuth = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const global_error_1 = require("../utils/global_error");
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
-const user_model_1 = __importDefault(require("../models/database/user_model"));
+const user_model_1 = __importDefault(require("../models/schemas/user_model"));
 exports.requireAuth = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let token;
     const headers = req.headers.authorization;

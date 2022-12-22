@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const nodemailer_1 = __importDefault(require("nodemailer"));
-const sendEmail = ({ subject, message, send_to, sent_from, reply_to, }) => {
+const sendEmail = ({ subject, body, send_to, sent_from, reply_to, }) => {
     const transporter = nodemailer_1.default.createTransport({
         host: process.env.EMAIL_HOST,
         port: 587,
@@ -21,7 +21,7 @@ const sendEmail = ({ subject, message, send_to, sent_from, reply_to, }) => {
         to: send_to,
         replyTo: reply_to,
         subject: subject,
-        html: message,
+        html: body,
     };
     transporter.sendMail(options, function (err, info) {
         if (err)

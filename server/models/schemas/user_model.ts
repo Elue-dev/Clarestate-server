@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { validateEmail } from "../../service/auth_service";
+import { validateEmail } from "../../services/auth_service";
 import { GlobalError } from "../../utils/global_error";
 
 const userSchema = new mongoose.Schema(
@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
     verificationCode: String,
+    codeExpires: {
+      type: Date,
+      // required: true,
+    },
     isVerified: {
       type: Boolean,
       default: false,
@@ -47,7 +51,7 @@ const userSchema = new mongoose.Schema(
       default: true,
       select: false,
     },
-    userAgent: {
+    userAgents: {
       type: Array,
       required: true,
       default: [],

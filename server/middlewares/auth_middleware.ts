@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { GlobalError } from "../utils/global_error";
 import handleAsync from "../utils/handle_async";
-import User from "../models/database/user_model";
+import User from "../models/schemas/user_model";
 import { UserPayload } from "../models/types/auth_types";
 
 export const requireAuth = handleAsync(

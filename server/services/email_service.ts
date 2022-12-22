@@ -1,13 +1,13 @@
 import nodemailer from "nodemailer";
-import { EmailI } from "../models/types/email_types";
+import { EmailType } from "../models/types/email_types";
 
 const sendEmail = ({
   subject,
-  message,
+  body,
   send_to,
   sent_from,
   reply_to,
-}: EmailI) => {
+}: EmailType) => {
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: 587,
@@ -25,7 +25,7 @@ const sendEmail = ({
     to: send_to,
     replyTo: reply_to,
     subject: subject,
-    html: message,
+    html: body,
   };
 
   transporter.sendMail(options, function (err, info) {
