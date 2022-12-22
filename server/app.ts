@@ -7,6 +7,7 @@ import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 import rateLimit from "express-rate-limit";
 import { GlobalError } from "./utils/global_error";
+import errorHandler from "./controllers/error_controller";
 
 import propertyRouter from "./routes/property_routes";
 import userRouter from "./routes/user_routes";
@@ -14,9 +15,9 @@ import authRouter from "./routes/auth_routes";
 import reviewRouter from "./routes/review_routes";
 import commentRouter from "./routes/comment_routes";
 import contactRouter from "./routes/contact_route";
-import errorHandler from "./middlewares/error_middleware";
+// import errorHandler from "./middlewares/error_middleware";
 
-export const app = express();
+const app = express();
 
 app.use(cors());
 
@@ -57,6 +58,8 @@ app.all("*", (req, res, next) => {
   next(
     new GlobalError(`Oops! Can't find ${req.originalUrl} on this server`, 404)
   );
-
-  app.use(errorHandler);
 });
+
+app.use(errorHandler);
+
+export default app;
