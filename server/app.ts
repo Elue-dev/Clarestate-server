@@ -14,6 +14,7 @@ import authRouter from "./routes/auth_routes";
 import reviewRouter from "./routes/review_routes";
 import commentRouter from "./routes/comment_routes";
 import contactRouter from "./routes/contact_route";
+import errorHandler from "./middlewares/error_middleware";
 
 export const app = Router();
 
@@ -54,4 +55,6 @@ app.all("*", (req, res, next) => {
   next(
     new GlobalError(`Oops! Can't find ${req.originalUrl} on this server`, 404)
   );
+
+  app.use(errorHandler);
 });
