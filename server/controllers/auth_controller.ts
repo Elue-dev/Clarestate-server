@@ -119,6 +119,21 @@ export const verifyCode = handleAsync(
 
 export const login = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return next(new GlobalError("Both email and password are required", 400));
+    }
+
+    const user = await User.findOne({ email }).select("+password");
+
+    //@ts-ignore
+    if (!user || !(await user.correctPassword(password, user.password))) {
+      return next(new GlobalError("Invalid email or password", 400));
+    }
+
+    createAndSendToken(user, 200, res);
+
     res.status(200).json({ status: "success" });
   }
 );

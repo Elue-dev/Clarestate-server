@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { genSalt, hash } from "bcryptjs";
+import { genSalt, hash, compare } from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
@@ -67,6 +67,13 @@ userSchema.pre("save", async function (next) {
 
   next();
 });
+
+userSchema.methods.correctPassword = async function (
+  candidatePassword: string,
+  userPassword: string
+) {
+  return await compare(candidatePassword, userPassword);
+};
 
 const User = mongoose.model("user", userSchema);
 

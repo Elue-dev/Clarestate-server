@@ -103,6 +103,16 @@ exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(v
     (0, auth_service_1.createAndSendToken)(user, 201, res);
 }));
 exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return next(new global_error_1.GlobalError("Both email and password are required", 400));
+    }
+    const user = yield user_model_1.default.findOne({ email }).select("+password");
+    //@ts-ignore
+    if (!user || !(yield user.correctPassword(password, user.password))) {
+        return next(new global_error_1.GlobalError("Invalid email or password", 400));
+    }
+    (0, auth_service_1.createAndSendToken)(user, 200, res);
     res.status(200).json({ status: "success" });
 }));
 exports.forgotPassword = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
