@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import User from "../models/schemas/user_model";
-import { validateEmail } from "../services/auth_service";
+import { createAndSendToken, validateEmail } from "../services/auth_service";
 import sendEmail from "../services/email_service";
 import { GlobalError } from "../utils/global_error";
 import handleAsync from "../utils/handle_async";
@@ -8,6 +8,7 @@ import { verificationEmail } from "../views/verification_email";
 import crypto from "crypto";
 import Cryptr from "cryptr";
 import Token from "../models/schemas/token_model";
+import { verificationSuccess } from "../views/verification_success";
 
 const cryptr = new Cryptr("kjsdbhcgEVWdcqwdqwfdqwe");
 
@@ -42,13 +43,6 @@ export const signup = handleAsync(
       codeExpires: Date.now() + 60 * (60 * 1000),
     });
 
-    // await new Token({
-    //   userId: user._id,
-    //   vCode: encryptedCode,
-    //   createdAt: Date.now(),
-    //   expiresAt: Date.now() + 60 * (60 * 1000),
-    // }).save();
-
     const subject = "Verify Your Email";
     const send_to = email;
     const sent_from = process.env.EMAIL_USER as string;
@@ -60,10 +54,14 @@ export const signup = handleAsync(
       sendEmail({ subject, body, send_to, sent_from, reply_to });
       res.status(200).json({
         status: "success",
+        userID: user._id,
         message: `A verification code has been sent to ${email}`,
       });
     } catch (error) {
-      console.log(error);
+      res.status(500).json({
+        status: "fail",
+        message: `Email not sent. please try again!`,
+      });
     }
   }
 );
@@ -71,10 +69,10 @@ export const signup = handleAsync(
 export const verifyCode = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { code } = req.body;
-    const { email } = req.params;
+    const { userID } = req.params;
 
     const user = await User.findOne({
-      email,
+      _id: userID,
       codeExpires: { $gt: Date.now() },
     });
 
@@ -95,10 +93,22 @@ export const verifyCode = handleAsync(
 
     await user.save();
 
-    res.status(200).json({
-      status: "success",
-      message: "Account successfully verified!",
-    });
+    const subject = `Welcome Onboard, ${user.username}!`;
+    const send_to = user.email;
+    const sent_from = process.env.EMAIL_USER as string;
+    const reply_to = "noreply@clarestate.com";
+    const body = verificationSuccess(user.username);
+
+    try {
+      sendEmail({ subject, body, send_to, sent_from, reply_to });
+    } catch (error) {
+      res.status(500).json({
+        status: "fail",
+        message: `Email not sent. please try again!`,
+      });
+    }
+
+    createAndSendToken(user, 201, res);
   }
 );
 

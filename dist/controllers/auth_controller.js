@@ -20,6 +20,7 @@ const global_error_1 = require("../utils/global_error");
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const verification_email_1 = require("../views/verification_email");
 const cryptr_1 = __importDefault(require("cryptr"));
+const verification_success_1 = require("../views/verification_success");
 const cryptr = new cryptr_1.default("kjsdbhcgEVWdcqwdqwfdqwe");
 exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, email, password } = req.body;
@@ -43,12 +44,6 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
         verificationCode: encryptedCode,
         codeExpires: Date.now() + 60 * (60 * 1000),
     });
-    // await new Token({
-    //   userId: user._id,
-    //   vCode: encryptedCode,
-    //   createdAt: Date.now(),
-    //   expiresAt: Date.now() + 60 * (60 * 1000),
-    // }).save();
     const subject = "Verify Your Email";
     const send_to = email;
     const sent_from = process.env.EMAIL_USER;
@@ -59,18 +54,22 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
         (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
         res.status(200).json({
             status: "success",
+            userID: user._id,
             message: `A verification code has been sent to ${email}`,
         });
     }
     catch (error) {
-        console.log(error);
+        res.status(500).json({
+            status: "fail",
+            message: `Email not sent. please try again!`,
+        });
     }
 }));
 exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { code } = req.body;
-    const { email } = req.params;
+    const { userID } = req.params;
     const user = yield user_model_1.default.findOne({
-        email,
+        _id: userID,
         codeExpires: { $gt: Date.now() },
     });
     if (!user) {
@@ -85,10 +84,21 @@ exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(v
     //@ts-ignore
     user.codeExpires = undefined;
     yield user.save();
-    res.status(200).json({
-        status: "success",
-        message: "Account successfully verified!",
-    });
+    const subject = `Welcome Onboard, ${user.username}!`;
+    const send_to = user.email;
+    const sent_from = process.env.EMAIL_USER;
+    const reply_to = "noreply@clarestate.com";
+    const body = (0, verification_success_1.verificationSuccess)(user.username);
+    try {
+        (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
+    }
+    catch (error) {
+        res.status(500).json({
+            status: "fail",
+            message: `Email not sent. please try again!`,
+        });
+    }
+    (0, auth_service_1.createAndSendToken)(user, 201, res);
 }));
 exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).json({ status: "success" });
