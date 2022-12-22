@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import express from "express";
 import cors from "cors";
 import cookies from "cookie-parser";
 import morgan from "morgan";
@@ -16,7 +16,7 @@ import commentRouter from "./routes/comment_routes";
 import contactRouter from "./routes/contact_route";
 import errorHandler from "./middlewares/error_middleware";
 
-export const app = Router();
+export const app = express();
 
 app.use(cors());
 

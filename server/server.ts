@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import colors from "colors";
 import { connectDatabase } from "./config/database";
+import { app } from "./app";
 
 process.on("uncaughtException", (err) => {
   console.log(err);
@@ -11,8 +12,6 @@ process.on("uncaughtException", (err) => {
 });
 
 dotenv.config();
-
-const app = express();
 
 connectDatabase();
 
