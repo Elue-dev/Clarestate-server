@@ -5,7 +5,7 @@ const auth_controller_1 = require("../controllers/auth_controller");
 const auth_middleware_1 = require("../middlewares/auth_middleware");
 const router = (0, express_1.Router)();
 router.post("/signup", auth_controller_1.signup);
-router.post("/verify-code/:userID", auth_controller_1.verifyCode);
+router.post("/verify-email/:userID", auth_controller_1.verifyCode);
 router.post("/login", auth_controller_1.login);
 router.post("/forgot-password", auth_controller_1.forgotPassword);
 router.post("/reset-password", auth_controller_1.resetPassword);

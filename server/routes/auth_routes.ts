@@ -13,7 +13,7 @@ import { requireAuth } from "../middlewares/auth_middleware";
 const router = Router();
 
 router.post("/signup", signup);
-router.post("/verify-code/:userID", verifyCode);
+router.post("/verify-email/:userID", verifyCode);
 router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);

@@ -19,9 +19,8 @@ const email_service_1 = __importDefault(require("../services/email_service"));
 const global_error_1 = require("../utils/global_error");
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const verification_email_1 = require("../views/verification_email");
-const cryptr_1 = __importDefault(require("cryptr"));
 const verification_success_1 = require("../views/verification_success");
-const cryptr = new cryptr_1.default("kjsdbhcgEVWdcqwdqwfdqwe");
+const cryptr_1 = require("../utils/cryptr");
 exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
@@ -36,7 +35,7 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
     }
     const code = Math.floor(100000 + Math.random() * 900000);
     const verificationCode = code.toString();
-    const encryptedCode = cryptr.encrypt(verificationCode);
+    const encryptedCode = cryptr_1.cryptr.encrypt(verificationCode);
     const user = yield user_model_1.default.create({
         username,
         email,
@@ -54,7 +53,6 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
         (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
         res.status(200).json({
             status: "success",
-            userID: user._id,
             message: `A verification code has been sent to ${email}`,
         });
     }
@@ -76,9 +74,9 @@ exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(v
         codeExpires: { $gt: Date.now() },
     });
     if (!user) {
-        return next(new global_error_1.GlobalError("Email already verified", 400));
+        return next(new global_error_1.GlobalError("Email already verified or user dosen't exist", 400));
     }
-    const decryptedCode = cryptr.decrypt(user.verificationCode);
+    const decryptedCode = cryptr_1.cryptr.decrypt(user.verificationCode);
     if (decryptedCode !== code) {
         return next(new global_error_1.GlobalError("Invalid or expired verification code", 400));
     }

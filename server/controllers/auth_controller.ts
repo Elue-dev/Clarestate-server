@@ -6,11 +6,9 @@ import { GlobalError } from "../utils/global_error";
 import handleAsync from "../utils/handle_async";
 import { verificationEmail } from "../views/verification_email";
 import crypto from "crypto";
-import Cryptr from "cryptr";
 import Token from "../models/schemas/token_model";
 import { verificationSuccess } from "../views/verification_success";
-
-const cryptr = new Cryptr("kjsdbhcgEVWdcqwdqwfdqwe");
+import { cryptr } from "../utils/cryptr";
 
 export const signup = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -54,7 +52,6 @@ export const signup = handleAsync(
       sendEmail({ subject, body, send_to, sent_from, reply_to });
       res.status(200).json({
         status: "success",
-        userID: user._id,
         message: `A verification code has been sent to ${email}`,
       });
     } catch (error) {
@@ -83,7 +80,9 @@ export const verifyCode = handleAsync(
     });
 
     if (!user) {
-      return next(new GlobalError("Email already verified", 400));
+      return next(
+        new GlobalError("Email already verified or user dosen't exist", 400)
+      );
     }
 
     const decryptedCode = cryptr.decrypt(user.verificationCode as string);
