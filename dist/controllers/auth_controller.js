@@ -126,7 +126,6 @@ exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0
     }
     yield user.save();
     (0, auth_service_1.createAndSendToken)(user, 200, res);
-    res.status(200).json({ status: "success" });
 }));
 exports.logout = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.cookie("token", "", {
