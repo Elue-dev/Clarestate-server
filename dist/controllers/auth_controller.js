@@ -120,6 +120,11 @@ exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0
     if (!user || !(yield user.correctPassword(password, user.password))) {
         return next(new global_error_1.GlobalError("Invalid email or password", 400));
     }
+    const userAgent = (0, ua_parser_js_1.default)(req.headers["user-agent"]);
+    if (!user.userAgents.includes(userAgent.ua)) {
+        user.userAgents.push(userAgent.ua);
+    }
+    yield user.save();
     (0, auth_service_1.createAndSendToken)(user, 200, res);
     res.status(200).json({ status: "success" });
 }));

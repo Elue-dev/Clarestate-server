@@ -19,10 +19,10 @@ const handleValidationErrorDB = (err: any) => {
   return new GlobalError(message, 400);
 };
 
-const hanndleJWTError = () =>
+const handleJWTError = () =>
   new GlobalError("Invalid token. Please log in again", 401);
 
-const hanndleJWTExpiredError = () =>
+const handleJWTExpiredError = () =>
   new GlobalError("Your token has expired. Please log in again", 401);
 
 const sendErrorDev = (err: any, res: Response) => {
@@ -61,17 +61,15 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
   if (process.env.NODE_ENV === "development") {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === "production") {
-    // let error = { ...err };
+    let error = { ...err };
 
-    sendErrorDev(err, res);
+    if (error.kind === "ObjectId") error = handleCastErrorDB(error);
+    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+    if (error._message === "Validation failed")
+      error = handleValidationErrorDB(error);
+    if (error.name === "JsonWebTokenError") error = handleJWTError();
+    if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
 
-    // if (error.kind === "ObjectId") error = handleCastErrorDB(error);
-    // if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-    // if (error._message === "Validation failed")
-    //   error = handleValidationErrorDB(error);
-    // if (error.name === "JsonWebTokenError") error = hanndleJWTError();
-    // if (error.name === "TokenExpiredError") error = hanndleJWTExpiredError();
-
-    // sendErrorProd(error, res);
+    sendErrorProd(error, res);
   }
 };

@@ -44,6 +44,7 @@ const restrictTo = (...roles) => {
         if (!roles.includes(req.user.role)) {
             return next(new global_error_1.GlobalError("Unauthorized. Only admins can perform this action.", 401));
         }
+        next();
     };
 };
 exports.restrictTo = restrictTo;

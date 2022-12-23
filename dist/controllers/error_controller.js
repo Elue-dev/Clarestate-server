@@ -15,8 +15,8 @@ const handleValidationErrorDB = (err) => {
     const message = `Invalid input data. ${errors.join(". ")}`;
     return new global_error_1.GlobalError(message, 400);
 };
-const hanndleJWTError = () => new global_error_1.GlobalError("Invalid token. Please log in again", 401);
-const hanndleJWTExpiredError = () => new global_error_1.GlobalError("Your token has expired. Please log in again", 401);
+const handleJWTError = () => new global_error_1.GlobalError("Invalid token. Please log in again", 401);
+const handleJWTExpiredError = () => new global_error_1.GlobalError("Your token has expired. Please log in again", 401);
 const sendErrorDev = (err, res) => {
     res.status(err.statusCode).json({
         status: err.status,
@@ -50,14 +50,17 @@ exports.default = (err, req, res, next) => {
         sendErrorDev(err, res);
     }
     else if (process.env.NODE_ENV === "production") {
-        // let error = { ...err };
-        sendErrorDev(err, res);
-        // if (error.kind === "ObjectId") error = handleCastErrorDB(error);
-        // if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-        // if (error._message === "Validation failed")
-        //   error = handleValidationErrorDB(error);
-        // if (error.name === "JsonWebTokenError") error = hanndleJWTError();
-        // if (error.name === "TokenExpiredError") error = hanndleJWTExpiredError();
-        // sendErrorProd(error, res);
+        let error = Object.assign({}, err);
+        if (error.kind === "ObjectId")
+            error = handleCastErrorDB(error);
+        if (error.code === 11000)
+            error = handleDuplicateFieldsDB(error);
+        if (error._message === "Validation failed")
+            error = handleValidationErrorDB(error);
+        if (error.name === "JsonWebTokenError")
+            error = handleJWTError();
+        if (error.name === "TokenExpiredError")
+            error = handleJWTExpiredError();
+        sendErrorProd(error, res);
     }
 };

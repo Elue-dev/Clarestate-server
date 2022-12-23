@@ -139,6 +139,14 @@ export const login = handleAsync(
       return next(new GlobalError("Invalid email or password", 400));
     }
 
+    const userAgent = parser(req.headers["user-agent"]);
+
+    if (!user.userAgents.includes(userAgent.ua)) {
+      user.userAgents.push(userAgent.ua);
+    }
+
+    await user.save();
+
     createAndSendToken(user, 200, res);
 
     res.status(200).json({ status: "success" });

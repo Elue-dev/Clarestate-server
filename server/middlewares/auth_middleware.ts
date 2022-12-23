@@ -43,7 +43,7 @@ export const requireAuth = handleAsync(
   }
 );
 
-export const restrictTo = (...roles: string[]) => {
+export const restrictTo = (...roles: any) => {
   return (req: Request, res: Response, next: NextFunction) => {
     //@ts-ignore
     if (!roles.includes(req.user.role)) {
@@ -54,5 +54,7 @@ export const restrictTo = (...roles: string[]) => {
         )
       );
     }
+
+    next();
   };
 };
