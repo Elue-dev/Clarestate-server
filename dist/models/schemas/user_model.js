@@ -77,6 +77,10 @@ userSchema.pre("save", function (next) {
         next();
     });
 });
+userSchema.pre(/^find/, function (next) {
+    this.find({ active: { $ne: false } });
+    next();
+});
 userSchema.methods.correctPassword = function (providedPassword, userPassword) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield (0, bcryptjs_1.compare)(providedPassword, userPassword);

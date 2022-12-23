@@ -8,5 +8,6 @@ router.route("/").get(auth_middleware_1.requireAuth, (0, auth_middleware_1.restr
 router
     .route("/:userID")
     .get(auth_middleware_1.requireAuth, users_controller_1.getSingleUser)
-    .patch(auth_middleware_1.requireAuth, (0, auth_middleware_1.restrictTo)("admin"), users_controller_1.updateUser);
+    .patch(auth_middleware_1.requireAuth, (0, auth_middleware_1.restrictTo)("admin"), users_controller_1.updateUser)
+    .delete(auth_middleware_1.requireAuth, (0, auth_middleware_1.restrictTo)("admin"), users_controller_1.deleteUser);
 exports.default = router;

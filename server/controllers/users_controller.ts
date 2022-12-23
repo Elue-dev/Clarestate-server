@@ -40,8 +40,6 @@ export const updateUser = handleAsync(
 
     const user = await User.findById(userID);
 
-    const { role } = req.body;
-
     if (!user) {
       return next(new GlobalError("No user with that id exists", 404));
     }
@@ -78,3 +76,28 @@ const filteredObj = (obj, ...allowedFields) => {
   });
   return newObj;
 };
+
+export const deleteUser = handleAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userID } = req.params;
+
+    const user = await User.findById(userID).select("+active");
+
+    if (!user) {
+      return next(new GlobalError("No user with that id exists", 404));
+    }
+
+    if (!user.active) {
+      return next(new GlobalError("User already deleted", 404));
+    }
+
+    user.active = false;
+
+    await user.save();
+
+    res.status(200).json({
+      status: "success",
+      data: user,
+    });
+  }
+);
