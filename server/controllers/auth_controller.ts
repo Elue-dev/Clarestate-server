@@ -108,7 +108,7 @@ export const verifyCode = handleAsync(
     } catch (error) {
       res.status(500).json({
         status: "fail",
-        message: `Email not sent. please try again!`,
+        message: `Email not sent. Please try again.`,
       });
     }
 
