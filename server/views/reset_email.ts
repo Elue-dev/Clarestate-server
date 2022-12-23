@@ -1,16 +1,20 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.verificationSuccess = void 0;
-const verificationSuccess = (username) => {
-    return `
+import { passwordResetType } from "../models/types/email_types";
+
+export const passwordResetEmail = ({
+  email,
+  username,
+  token,
+  url,
+}: passwordResetType) => {
+  return `
             
         <!doctype html>
         <html lang="en-US">
         
         <head>
             <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
-            <title>Verification success</title>
-            <meta name="description" content="Verification success">
+            <title>Email Verification</title>
+            <meta name="description" content="Email Verification.">
             <style type="text/css">
                 a:hover {text-decoration: underline !important;}
             </style>
@@ -39,20 +43,21 @@ const verificationSuccess = (username) => {
                                         </tr>
                                         <tr>
                                             <td style="padding:0 35px;">
-                                                <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:38px;font-family:'Rubik',sans-serif; text-align: left;">Welcome on board, ${username}! 🎉</h1>
+                                                <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:28px;font-family:'Rubik',sans-serif; text-align: left;">Hi, ${username}</h1>
                                                 <span
                                                     style="display:flex; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
                                                     <span style='text-align: left;'>
                                                     <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
-                                               Thank you for verifying your email! You are now ready to get started and explore everything that Clarestate has to offer.
+                                                    This email was sent to you because you requested to reset your password.
+                                                    Click on the link below to create a new password.
                                                 </p>
-                                                <br>
-                                                <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">We hope you enjoy our services and have a nice experience with us. Feel free to reach out to us for any questions you may have.</p>
-                                                </span>
-
-                                                <span style='text-align:left'>
-                                                <p>Regards,<br> Clarestate team.</p>
-                                                </span>
+                                                  <br>
+                                                  <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">Note: This reset link is valid for only <b>10 minutes</b></p>
+                                                  <a href="${url}"
+                                                      style="background:#20e277;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Reset
+                                                      Password</a>
+                                                        <br>
+                                                      <p> If you didn't request a password reset, you can ignore this email. Your password will not be changed.</p>
                                             </td>
                                         </tr>
                                         <tr>
@@ -80,4 +85,3 @@ const verificationSuccess = (username) => {
         
         </html>`;
 };
-exports.verificationSuccess = verificationSuccess;

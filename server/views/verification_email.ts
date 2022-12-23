@@ -1,8 +1,10 @@
-export const verificationEmail = (
-  username: string,
-  verificationCode: string,
-  url: string
-) => {
+import { verificationType } from "../models/types/email_types";
+
+export const verificationEmail = ({
+  username,
+  verificationCode,
+  url,
+}: verificationType) => {
   return `
           
       <!doctype html>
@@ -40,12 +42,12 @@ export const verificationEmail = (
                                       </tr>
                                       <tr>
                                           <td style="padding:0 35px;">
-                                              <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif; text-align: left;">Hi, ${username}</h1>
+                                              <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:28px;font-family:'Rubik',sans-serif; text-align: left;">Hi, ${username}</h1>
                                               <span
                                                   style="display:flex; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
                                                   <span style='text-align: left;'>
                                                   <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
-                                             Thank you for signing up to Clarestate! You are almost ready to get started, but first, you need to verify your email address using the verification code sent to you.
+                                             Thank you for signing up to Clarestate! You are almost ready to get started, but first, you need to verify your email address using the verification below.
                                               </p>
                                                 <br>
                                               <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">Your verification code is <b>${verificationCode}</b> - Valid for only 1 hour</p>

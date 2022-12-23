@@ -10,7 +10,7 @@ const tokenSchema = new mongoose_1.default.Schema({
         required: true,
         ref: "user",
     },
-    vCode: {
+    token: {
         type: String,
         required: true,
     },
