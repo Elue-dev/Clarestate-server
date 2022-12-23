@@ -4,10 +4,15 @@ import {
   getAllUsers,
   updateUser,
   deleteUser,
+  updateLoggedInUser,
+  getLoggedInUser,
 } from "../controllers/users_controller";
 import { requireAuth, restrictTo } from "../middlewares/auth_middleware";
 
 const router = Router();
+
+router.patch("/update-me", requireAuth, updateLoggedInUser);
+router.get("/get-me", requireAuth, getLoggedInUser);
 
 router.route("/").get(requireAuth, restrictTo("admin"), getAllUsers);
 

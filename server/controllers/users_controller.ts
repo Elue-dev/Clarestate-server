@@ -12,7 +12,7 @@ export const getAllUsers = handleAsync(
     res.status(200).json({
       status: "success",
       results: users.length,
-      data: users,
+      users,
     });
   }
 );
@@ -37,6 +37,7 @@ export const getSingleUser = handleAsync(
 export const updateUser = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userID } = req.params;
+    const { isVerified } = req.body;
 
     const user = await User.findById(userID);
 
@@ -44,16 +45,16 @@ export const updateUser = handleAsync(
       return next(new GlobalError("No user with that id exists", 404));
     }
 
-    const filteredBody = filteredObj(
-      req.body,
-      "username",
-      "email",
-      "photo",
-      "bio",
-      "phone"
-    );
+    if (isVerified) {
+      return next(
+        new GlobalError(
+          "You are not allowed to change user verification status",
+          401
+        )
+      );
+    }
 
-    const updatedUser = await User.findByIdAndUpdate(userID, filteredBody, {
+    const updatedUser = await User.findByIdAndUpdate(userID, req.body, {
       new: true,
       runValidators: true,
     });
@@ -65,17 +66,64 @@ export const updateUser = handleAsync(
   }
 );
 
-//@ts-ignore
-const filteredObj = (obj, ...allowedFields) => {
-  const newObj = {};
-  Object.keys(obj).forEach((val) => {
-    if (allowedFields.includes(val)) {
-      //@ts-ignore
-      newObj[val] = obj[val];
+export const updateLoggedInUser = handleAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    //@ts-ignore
+    const user = await User.findById(req.user._id);
+
+    const { username, email, bio, photo, phone } = req.body;
+
+    if (!user) {
+      return next(new GlobalError("User not found", 404));
     }
-  });
-  return newObj;
-};
+
+    if (!username && !email && !bio && !phone && !photo) {
+      return next(
+        new GlobalError("Please provide fields you want to update", 400)
+      );
+    }
+
+    const filteredBody = filteredObj(
+      req.body,
+      "username",
+      "email",
+      "photo",
+      "bio",
+      "phone"
+    );
+
+    const updatedUser = await User.findByIdAndUpdate(
+      //@ts-ignore
+      req.user._id,
+      filteredBody,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    res.status(200).json({
+      status: "success",
+      updatedUser,
+    });
+  }
+);
+
+export const getLoggedInUser = handleAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    //@ts-ignore
+    const user = await User.findById(req.user._id).select("+active");
+
+    if (!user) {
+      return next(new GlobalError("User not found", 404));
+    }
+
+    res.status(200).json({
+      status: "success",
+      user,
+    });
+  }
+);
 
 export const deleteUser = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -101,3 +149,15 @@ export const deleteUser = handleAsync(
     });
   }
 );
+
+//@ts-ignore
+const filteredObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach((val) => {
+    if (allowedFields.includes(val)) {
+      //@ts-ignore
+      newObj[val] = obj[val];
+    }
+  });
+  return newObj;
+};

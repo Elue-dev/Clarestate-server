@@ -148,8 +148,6 @@ export const login = handleAsync(
     await user.save();
 
     createAndSendToken(user, 200, res);
-
-    res.status(200).json({ status: "success" });
   }
 );
 
