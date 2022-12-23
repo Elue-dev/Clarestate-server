@@ -26,6 +26,7 @@ const cryptr_1 = require("../utils/cryptr");
 const reset_email_1 = require("../views/reset_email");
 const reset_success_1 = require("../views/reset_success");
 const ua_parser_js_1 = __importDefault(require("ua-parser-js"));
+const update_success_1 = require("../views/update_success");
 exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
@@ -147,7 +148,6 @@ exports.forgotPassword = (0, handle_async_1.default)((req, res, next) => __await
         yield token_model_1.default.deleteOne();
     const resetToken = (0, crypto_1.randomBytes)(32).toString("hex") + existingUser._id;
     const hashedToken = (0, crypto_1.createHash)("sha256").update(resetToken).digest("hex");
-    console.log(resetToken);
     yield new token_model_1.default({
         userId: existingUser._id,
         token: hashedToken,
@@ -232,5 +232,50 @@ exports.resetPassword = (0, handle_async_1.default)((req, res, next) => __awaite
     }
 }));
 exports.updatePassword = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(200).json({ status: "success" });
+    const { oldPassword, newPassword, confirmNewPassword } = req.body;
+    //@ts-ignore
+    const user = yield user_model_1.default.findById(req.user.id).select("+password");
+    if (!oldPassword || !newPassword || !confirmNewPassword) {
+        return next(new global_error_1.GlobalError("Please provide all 3 password credentials", 400));
+    }
+    //@ts-ignore
+    if (!(yield user.correctPassword(oldPassword, user.password))) {
+        return next(new global_error_1.GlobalError("Old password is incorrect", 400));
+    }
+    if (oldPassword === newPassword) {
+        return next(new global_error_1.GlobalError("You used an old password. To protect your account, please choose a new password.", 400));
+    }
+    if (newPassword !== confirmNewPassword) {
+        return next(new global_error_1.GlobalError("New password credentials do not match", 400));
+    }
+    //@ts-ignore
+    user.password = newPassword;
+    const userAgent = (0, ua_parser_js_1.default)(req.headers["user-agent"]);
+    const browser = userAgent.browser.name || "Not detected";
+    const OS = `${userAgent.os.name || "Not detected"} (${userAgent.os.version || "Not detected"})`;
+    const subject = `${user === null || user === void 0 ? void 0 : user.username}, Your password was successfully changed`;
+    const send_to = user === null || user === void 0 ? void 0 : user.email;
+    const sent_from = process.env.EMAIL_USER;
+    const reply_to = process.env.REPLY_TO;
+    const body = (0, update_success_1.updateSuccess)({
+        //@ts-ignore
+        username: user === null || user === void 0 ? void 0 : user.username,
+        //@ts-ignore
+        browser,
+        OS,
+    });
+    try {
+        //@ts-ignore
+        (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
+        res.status(200).json({
+            status: "success",
+            message: "Password successfully changed!",
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            status: "fail",
+            message: `Email not sent. Please try again.`,
+        });
+    }
 }));

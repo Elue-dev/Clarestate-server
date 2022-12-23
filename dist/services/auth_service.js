@@ -7,7 +7,7 @@ exports.validateEmail = exports.createAndSendToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const generateToken = (id) => {
     return jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_COOKIE_EXPIRES_IN,
+        expiresIn: process.env.JWT_EXPIRES_IN,
     });
 };
 const createAndSendToken = (user, statusCode, res) => {

@@ -9,10 +9,10 @@ import { createHash, randomBytes } from "crypto";
 import Token from "../models/schemas/token_model";
 import { verificationSuccess } from "../views/verification_success";
 import { cryptr } from "../utils/cryptr";
-import { userInfo } from "os";
 import { passwordResetEmail } from "../views/reset_email";
 import { resetSuccess } from "../views/reset_success";
 import parser from "ua-parser-js";
+import { updateSuccess } from "../views/update_success";
 
 export const signup = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -181,8 +181,6 @@ export const forgotPassword = handleAsync(
     const resetToken = randomBytes(32).toString("hex") + existingUser._id;
     const hashedToken = createHash("sha256").update(resetToken).digest("hex");
 
-    console.log(resetToken);
-
     await new Token({
       userId: existingUser._id,
       token: hashedToken,
@@ -292,6 +290,69 @@ export const resetPassword = handleAsync(
 
 export const updatePassword = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    res.status(200).json({ status: "success" });
+    const { oldPassword, newPassword, confirmNewPassword } = req.body;
+
+    //@ts-ignore
+    const user = await User.findById(req.user.id).select("+password");
+
+    if (!oldPassword || !newPassword || !confirmNewPassword) {
+      return next(
+        new GlobalError("Please provide all 3 password credentials", 400)
+      );
+    }
+    //@ts-ignore
+    if (!(await user.correctPassword(oldPassword, user.password))) {
+      return next(new GlobalError("Old password is incorrect", 400));
+    }
+
+    if (oldPassword === newPassword) {
+      return next(
+        new GlobalError(
+          "You used an old password. To protect your account, please choose a new password.",
+          400
+        )
+      );
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      return next(
+        new GlobalError("New password credentials do not match", 400)
+      );
+    }
+    //@ts-ignore
+    user.password = newPassword;
+
+    const userAgent = parser(req.headers["user-agent"]);
+
+    const browser = userAgent.browser.name || "Not detected";
+    const OS = `${userAgent.os.name || "Not detected"} (${
+      userAgent.os.version || "Not detected"
+    })`;
+
+    const subject = `${user?.username}, Your password was successfully changed`;
+    const send_to = user?.email;
+    const sent_from = process.env.EMAIL_USER as string;
+    const reply_to = process.env.REPLY_TO as string;
+    const body = updateSuccess({
+      //@ts-ignore
+      username: user?.username,
+      //@ts-ignore
+      browser,
+      OS,
+    });
+
+    try {
+      //@ts-ignore
+      sendEmail({ subject, body, send_to, sent_from, reply_to });
+      res.status(200).json({
+        status: "success",
+        message: "Password successfully changed!",
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "fail",
+        message: `Email not sent. Please try again.`,
+      });
+    }
   }
 );

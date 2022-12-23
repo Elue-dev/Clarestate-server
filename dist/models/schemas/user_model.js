@@ -77,9 +77,9 @@ userSchema.pre("save", function (next) {
         next();
     });
 });
-userSchema.methods.correctPassword = function (candidatePassword, userPassword) {
+userSchema.methods.correctPassword = function (providedPassword, userPassword) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield (0, bcryptjs_1.compare)(candidatePassword, userPassword);
+        return yield (0, bcryptjs_1.compare)(providedPassword, userPassword);
     });
 };
 const User = mongoose_1.default.model("user", userSchema);
