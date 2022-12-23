@@ -31,6 +31,7 @@
     "nodemailer": "^6.8.0",
     "rimraf": "^3.0.2",
     "slugify": "^1.6.5",
+    "ua-parser-js": "^1.0.32",
     "validator": "^13.7.0",
     "xss-clean": "^0.1.1"
   },
@@ -46,6 +47,7 @@
     "@types/node": "^18.11.9",
     "@types/nodemailer": "^6.4.7",
     "@types/nodemailer-express-handlebars": "^4.0.2",
+    "@types/ua-parser-js": "^0.7.36",
     "colors": "^1.4.0",
     "morgan": "^1.10.0",
     "nodemailer-express-handlebars": "^6.0.0",

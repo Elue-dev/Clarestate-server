@@ -15,7 +15,6 @@ import authRouter from "./routes/auth_routes";
 import reviewRouter from "./routes/review_routes";
 import commentRouter from "./routes/comment_routes";
 import contactRouter from "./routes/contact_route";
-// import errorHandler from "./middlewares/error_middleware";
 
 const app = express();
 

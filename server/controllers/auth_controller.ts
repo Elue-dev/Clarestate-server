@@ -11,6 +11,8 @@ import { verificationSuccess } from "../views/verification_success";
 import { cryptr } from "../utils/cryptr";
 import { userInfo } from "os";
 import { passwordResetEmail } from "../views/reset_email";
+import { resetSuccess } from "../views/reset_success";
+import parser from "ua-parser-js";
 
 export const signup = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -253,10 +255,38 @@ export const resetPassword = handleAsync(
 
     await Token.deleteOne({ token: hashedToken });
 
-    res.status(200).json({
-      status: "success",
-      message: "Password reset successful!",
+    const userAgent = parser(req.headers["user-agent"]);
+
+    const browser = userAgent.browser.name || "Not detected";
+    const OS = `${userAgent.os.name || "Not detected"}(${
+      userAgent.os.version || "Not detected"
+    })`;
+
+    const subject = `${user?.username}, Your password was successfully reset`;
+    const send_to = user?.email;
+    const sent_from = process.env.EMAIL_USER as string;
+    const reply_to = process.env.REPLY_TO as string;
+    const body = resetSuccess({
+      //@ts-ignore
+      username: user?.username,
+      //@ts-ignore
+      browser,
+      OS,
     });
+
+    try {
+      //@ts-ignore
+      sendEmail({ subject, body, send_to, sent_from, reply_to });
+      res.status(200).json({
+        status: "success",
+        message: `Password reset successful!`,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "fail",
+        message: `Email not sent. Please try again.`,
+      });
+    }
   }
 );
 

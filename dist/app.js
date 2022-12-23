@@ -19,7 +19,6 @@ const auth_routes_1 = __importDefault(require("./routes/auth_routes"));
 const review_routes_1 = __importDefault(require("./routes/review_routes"));
 const comment_routes_1 = __importDefault(require("./routes/comment_routes"));
 const contact_route_1 = __importDefault(require("./routes/contact_route"));
-// import errorHandler from "./middlewares/error_middleware";
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json({ limit: "10kb" }));

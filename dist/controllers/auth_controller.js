@@ -24,6 +24,8 @@ const token_model_1 = __importDefault(require("../models/schemas/token_model"));
 const verification_success_1 = require("../views/verification_success");
 const cryptr_1 = require("../utils/cryptr");
 const reset_email_1 = require("../views/reset_email");
+const reset_success_1 = require("../views/reset_success");
+const ua_parser_js_1 = __importDefault(require("ua-parser-js"));
 exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
@@ -200,10 +202,34 @@ exports.resetPassword = (0, handle_async_1.default)((req, res, next) => __awaite
     //@ts-ignore
     yield user.save();
     yield token_model_1.default.deleteOne({ token: hashedToken });
-    res.status(200).json({
-        status: "success",
-        message: "Password reset successful!",
+    const userAgent = (0, ua_parser_js_1.default)(req.headers["user-agent"]);
+    const browser = userAgent.browser.name || "Not detected";
+    const OS = `${userAgent.os.name || "Not detected"}(${userAgent.os.version || "Not detected"})`;
+    const subject = `${user === null || user === void 0 ? void 0 : user.username}, Your password was successfully reset`;
+    const send_to = user === null || user === void 0 ? void 0 : user.email;
+    const sent_from = process.env.EMAIL_USER;
+    const reply_to = process.env.REPLY_TO;
+    const body = (0, reset_success_1.resetSuccess)({
+        //@ts-ignore
+        username: user === null || user === void 0 ? void 0 : user.username,
+        //@ts-ignore
+        browser,
+        OS,
     });
+    try {
+        //@ts-ignore
+        (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
+        res.status(200).json({
+            status: "success",
+            message: `Password reset successful!`,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            status: "fail",
+            message: `Email not sent. Please try again.`,
+        });
+    }
 }));
 exports.updatePassword = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).json({ status: "success" });

@@ -18,3 +18,9 @@ export interface verificationType {
   verificationCode: string;
   url: string;
 }
+
+export interface resetSuccessType {
+  username: string;
+  browser: string;
+  OS: string;
+}
