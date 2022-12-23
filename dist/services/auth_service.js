@@ -20,8 +20,7 @@ const createAndSendToken = (user, statusCode, res) => {
         httpOnly: true,
         secure: false,
     };
-    if (process.env.NODE_ENV === "production")
-        cookieOptions.secure = true;
+    // if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
     res.cookie("token", token, cookieOptions);
     user.password = undefined;
     res.status(statusCode).json({

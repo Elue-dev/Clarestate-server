@@ -24,7 +24,7 @@ export const createAndSendToken = (
     secure: false,
   };
 
-  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+  // if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
   res.cookie("token", token, cookieOptions);
 
