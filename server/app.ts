@@ -54,9 +54,7 @@ app.use("/api/comments", commentRouter);
 app.use("/api/contact", contactRouter);
 
 app.all("*", (req, res, next) => {
-  next(
-    new GlobalError(`Oops! Can't find ${req.originalUrl} on this server`, 404)
-  );
+  next(new GlobalError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 
 app.use(errorHandler);
