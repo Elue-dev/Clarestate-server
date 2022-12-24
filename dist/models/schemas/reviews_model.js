@@ -31,6 +31,7 @@ const reviewSchema = new mongoose_1.default.Schema({
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
 });
+reviewSchema.index({ property: 1, user: 1 }, { unique: true });
 reviewSchema.pre(/^find/, function (next) {
     this.populate({
         path: "user",

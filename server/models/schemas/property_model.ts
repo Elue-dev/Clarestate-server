@@ -87,6 +87,8 @@ const propertySchema = new mongoose.Schema(
   }
 );
 
+propertySchema.index({ slug: 1 });
+
 propertySchema.virtual("reviews", {
   ref: "review",
   foreignField: "property",

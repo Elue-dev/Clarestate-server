@@ -86,6 +86,7 @@ const propertySchema = new mongoose_1.default.Schema({
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
 });
+propertySchema.index({ slug: 1 });
 propertySchema.virtual("reviews", {
     ref: "review",
     foreignField: "property",
