@@ -87,6 +87,18 @@ const propertySchema = new mongoose.Schema(
   }
 );
 
+propertySchema.virtual("reviews", {
+  ref: "review",
+  foreignField: "property",
+  localField: "_id",
+});
+
+propertySchema.virtual("comments", {
+  ref: "comment",
+  foreignField: "property",
+  localField: "_id",
+});
+
 propertySchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();

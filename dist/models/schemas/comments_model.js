@@ -26,9 +26,6 @@ const commentSchema = new mongoose_1.default.Schema({
 });
 commentSchema.pre(/^find/, function (next) {
     this.populate({
-        path: "property",
-        select: "name price location",
-    }).populate({
         path: "user",
         select: "username photo",
     });

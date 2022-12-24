@@ -86,6 +86,16 @@ const propertySchema = new mongoose_1.default.Schema({
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
 });
+propertySchema.virtual("reviews", {
+    ref: "review",
+    foreignField: "property",
+    localField: "_id",
+});
+propertySchema.virtual("comments", {
+    ref: "comment",
+    foreignField: "property",
+    localField: "_id",
+});
 propertySchema.pre("save", function (next) {
     this.slug = (0, slugify_1.default)(this.name, { lower: true });
     next();

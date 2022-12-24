@@ -63,7 +63,9 @@ export const getSingleProperty = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { slug } = req.params;
 
-    const property = await Property.findOne({ slug });
+    const property = await Property.findOne({ slug })
+      .populate("reviews")
+      .populate("comments");
 
     if (!property) {
       return next(new GlobalError("Property not found", 404));

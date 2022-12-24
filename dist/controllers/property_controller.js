@@ -59,7 +59,9 @@ exports.getAllProperties = (0, handle_async_1.default)((req, res, next) => __awa
 }));
 exports.getSingleProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { slug } = req.params;
-    const property = yield property_model_1.default.findOne({ slug });
+    const property = yield property_model_1.default.findOne({ slug })
+        .populate("reviews")
+        .populate("comments");
     if (!property) {
         return next(new global_error_1.GlobalError("Property not found", 404));
     }
