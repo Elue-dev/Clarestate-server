@@ -45,7 +45,7 @@ app.use("/api/reviews", review_routes_1.default);
 app.use("/api/comments", comment_routes_1.default);
 app.use("/api/contact", contact_route_1.default);
 app.all("*", (req, res, next) => {
-    next(new global_error_1.GlobalError(`Oops! Can't find ${req.originalUrl} on this server`, 404));
+    next(new global_error_1.GlobalError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 app.use(error_controller_1.default);
 exports.default = app;
