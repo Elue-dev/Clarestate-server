@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import User from "../models/schemas/user_model";
+import sendEmail from "../services/email_service";
 import { GlobalError } from "../utils/global_error";
 import handleAsync from "../utils/handle_async";
+import { deleteAccount } from "../views/delete_account";
 
 export const getAllUsers = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -125,6 +127,51 @@ export const getLoggedInUser = handleAsync(
   }
 );
 
+export const deleteLoggedInUser = handleAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    //@ts-ignore
+    const user = await User.findById(req.user._id).select("+active");
+
+    if (!user) {
+      return next(new GlobalError("User not found", 404));
+    }
+
+    if (!user.active) {
+      return next(new GlobalError("User already deleted", 404));
+    }
+
+    user.active = false;
+
+    await user.save();
+
+    user.verificationCode = undefined;
+    user.isVerified = true;
+    user.codeExpires = undefined;
+
+    await user.save();
+
+    const subject = `Notification on deleted account `;
+    const send_to = user.email;
+    const sent_from = process.env.EMAIL_USER as string;
+    const reply_to = process.env.REPLY_TO as string;
+    const body = deleteAccount(user.username);
+
+    try {
+      sendEmail({ subject, body, send_to, sent_from, reply_to });
+    } catch (error) {
+      res.status(500).json({
+        status: "fail",
+        message: `Email not sent. Please try again.`,
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "User sucessfully deleted",
+    });
+  }
+);
+
 export const deleteUser = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userID } = req.params;
@@ -145,7 +192,7 @@ export const deleteUser = handleAsync(
 
     res.status(200).json({
       status: "success",
-      data: user,
+      message: "User sucessfully deleted",
     });
   }
 );

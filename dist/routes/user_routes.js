@@ -6,6 +6,7 @@ const auth_middleware_1 = require("../middlewares/auth_middleware");
 const router = (0, express_1.Router)();
 router.patch("/update-me", auth_middleware_1.requireAuth, users_controller_1.updateLoggedInUser);
 router.get("/get-me", auth_middleware_1.requireAuth, users_controller_1.getLoggedInUser);
+router.delete("/delete-me", auth_middleware_1.requireAuth, users_controller_1.deleteLoggedInUser);
 router.route("/").get(auth_middleware_1.requireAuth, (0, auth_middleware_1.restrictTo)("admin"), users_controller_1.getAllUsers);
 router
     .route("/:userID")
