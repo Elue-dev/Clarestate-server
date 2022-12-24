@@ -24,21 +24,15 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
         api_key: process.env.CLOUDINARY_KEY,
         api_secret: process.env.CLOUDINARY_SECRET,
     });
-    // let file_data = {};
     let uploadedFiles = [];
     req.body.images = [];
-    console.log("running");
     yield Promise.all(
     // @ts-ignore
     req.files.map((file) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log("running.....");
         uploadedFiles = yield cloud.uploader.upload(file.path, {
             folder: "Clarestate",
             resource_type: "image",
         });
-        let imagesArray = [];
-        // await imagesArray.push(uploadedFiles.secure_url);
-        // console.log(imagesArray);
         yield req.body.images.push(uploadedFiles.secure_url);
     })));
     const property = yield property_model_1.default.create(req.body);
@@ -48,7 +42,29 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
     });
 }));
 exports.getAllProperties = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const properties = yield property_model_1.default.find().sort("-createdAt");
+    let queryObj = Object.assign({}, req.query);
+    const excludedFields = ["page", "sort", "limit", "fields"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+    let queryString = JSON.stringify(queryObj);
+    queryString = queryString.replace(/\b(gte|gt|lte|lt|ne|eq)\b/g, (match) => `$${match}`);
+    let query = property_model_1.default.find(JSON.parse(queryString));
+    if (req.query.sort) {
+        //@ts-ignore
+        const sortBy = req.query.sort.split(",").join(" ");
+        query = query.sort(sortBy);
+    }
+    else {
+        query = query.sort("-createdAt");
+    }
+    if (req.query.fields) {
+        //@ts-ignore
+        const fields = req.query.fields.split(",").join(" ");
+        query = query.select(fields);
+    }
+    else {
+        query = query.select("-__v");
+    }
+    const properties = yield query;
     res.status(200).json({
         status: "success",
         results: properties.length,

@@ -15,27 +15,17 @@ export const createProperty = handleAsync(
       api_secret: process.env.CLOUDINARY_SECRET as string,
     });
 
-    // let file_data = {};
     let uploadedFiles: any = [];
 
     req.body.images = [];
 
-    console.log("running");
-
     await Promise.all(
       // @ts-ignore
       req.files.map(async (file: any) => {
-        console.log("running.....");
         uploadedFiles = await cloud.uploader.upload(file.path, {
           folder: "Clarestate",
           resource_type: "image",
         });
-
-        let imagesArray: any = [];
-
-        // await imagesArray.push(uploadedFiles.secure_url);
-        // console.log(imagesArray);
-
         await req.body.images.push(uploadedFiles.secure_url);
       })
     );
@@ -51,7 +41,36 @@ export const createProperty = handleAsync(
 
 export const getAllProperties = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const properties = await Property.find().sort("-createdAt");
+    let queryObj = { ...req.query };
+
+    const excludedFields = ["page", "sort", "limit", "fields"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    let queryString = JSON.stringify(queryObj);
+    queryString = queryString.replace(
+      /\b(gte|gt|lte|lt|ne|eq)\b/g,
+      (match) => `$${match}`
+    );
+
+    let query = Property.find(JSON.parse(queryString));
+
+    if (req.query.sort) {
+      //@ts-ignore
+      const sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort("-createdAt");
+    }
+
+    if (req.query.fields) {
+      //@ts-ignore
+      const fields = req.query.fields.split(",").join(" ");
+      query = query.select(fields);
+    } else {
+      query = query.select("-__v");
+    }
+
+    const properties = await query;
 
     res.status(200).json({
       status: "success",
