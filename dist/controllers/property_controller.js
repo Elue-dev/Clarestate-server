@@ -17,6 +17,7 @@ const property_model_1 = __importDefault(require("../models/schemas/property_mod
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const cloudinary_1 = __importDefault(require("cloudinary"));
 const file_upload_1 = require("../utils/file_upload");
+const api_features_1 = require("../services/api_features");
 const cloud = cloudinary_1.default.v2;
 exports.createProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     cloud.config({
@@ -42,29 +43,13 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
     });
 }));
 exports.getAllProperties = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let queryObj = Object.assign({}, req.query);
-    const excludedFields = ["page", "sort", "limit", "fields"];
-    excludedFields.forEach((el) => delete queryObj[el]);
-    let queryString = JSON.stringify(queryObj);
-    queryString = queryString.replace(/\b(gte|gt|lte|lt|ne|eq)\b/g, (match) => `$${match}`);
-    let query = property_model_1.default.find(JSON.parse(queryString));
-    if (req.query.sort) {
-        //@ts-ignore
-        const sortBy = req.query.sort.split(",").join(" ");
-        query = query.sort(sortBy);
-    }
-    else {
-        query = query.sort("-createdAt");
-    }
-    if (req.query.fields) {
-        //@ts-ignore
-        const fields = req.query.fields.split(",").join(" ");
-        query = query.select(fields);
-    }
-    else {
-        query = query.select("-__v");
-    }
-    const properties = yield query;
+    //@ts-ignore
+    const features = new api_features_1.APIFeatures(property_model_1.default.find(), req.query)
+        .filter()
+        .sort()
+        .limitFields();
+    //@ts-ignore
+    const properties = yield features.query;
     res.status(200).json({
         status: "success",
         results: properties.length,
