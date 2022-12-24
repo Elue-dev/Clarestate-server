@@ -144,13 +144,7 @@ export const deleteLoggedInUser = handleAsync(
 
     await user.save();
 
-    user.verificationCode = undefined;
-    user.isVerified = true;
-    user.codeExpires = undefined;
-
-    await user.save();
-
-    const subject = `Notification on deleted account `;
+    const subject = `Notification on deleted account`;
     const send_to = user.email;
     const sent_from = process.env.EMAIL_USER as string;
     const reply_to = process.env.REPLY_TO as string;
@@ -158,17 +152,16 @@ export const deleteLoggedInUser = handleAsync(
 
     try {
       sendEmail({ subject, body, send_to, sent_from, reply_to });
+      res.status(200).json({
+        status: "success",
+        message: "User sucessfully deleted",
+      });
     } catch (error) {
       res.status(500).json({
         status: "fail",
         message: `Email not sent. Please try again.`,
       });
     }
-
-    res.status(200).json({
-      status: "success",
-      message: "User sucessfully deleted",
-    });
   }
 );
 

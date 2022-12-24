@@ -36,7 +36,7 @@ export const deleteAccount = (username: string) => {
                                           </tr>
                                           <tr>
                                               <td style="padding:0 35px;">
-                                                  <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:38px;font-family:'Rubik',sans-serif; text-align: left;">Welcome on board, ${username}! 🎉</h1>
+                                                  <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:28px;font-family:'Rubik',sans-serif; text-align: left;">Hi ${username}! 🎉</h1>
                                                   <span
                                                       style="display:flex; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
                                                       <span style='text-align: left;'>
@@ -44,7 +44,7 @@ export const deleteAccount = (username: string) => {
                                               You are recieving this email because your account has just being deleted.
                                                   </p>
                                                   <br>
-                                                  <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">If this action was not initiated by you, reach out to us via our contact page in the Clarestate website. </p>
+                                                  <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">If this action was not initiated by you, reach out to us via our contact page o the Clarestate website. </p>
                                                   <br>
                                                   <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">If it was initiated by you and you want to restore your account, also do well to reach out to us and we will get you up and running again.</p>
                                                   </span>
