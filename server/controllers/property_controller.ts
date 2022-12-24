@@ -59,4 +59,46 @@ export const getAllProperties = handleAsync(
   }
 );
 
+export const getSingleProperty = handleAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { slug } = req.params;
+
+    const property = await Property.findOne({ slug });
+
+    if (!property) {
+      return next(new GlobalError("Property not found", 404));
+    }
+
+    res.status(200).json({
+      status: "success",
+      property,
+    });
+  }
+);
+
+export const updateProperty = handleAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { slug } = req.params;
+
+    if (req.body.id || req.body._id) {
+      return next(new GlobalError("property ID cannot be modified", 404));
+    }
+
+    //@ts-ignore
+    const property = await Property.findOneAndUpdate(slug, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!property) {
+      return next(new GlobalError("Property not found", 404));
+    }
+
+    res.status(200).json({
+      status: "success",
+      property,
+    });
+  }
+);
+
 export const uplodaProperyPhotos = upload.array("images", 6);

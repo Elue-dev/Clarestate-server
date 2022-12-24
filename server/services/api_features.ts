@@ -49,7 +49,7 @@ export class APIFeatures {
       this.query = query.select(fields);
     } else {
       //@ts-ignore
-      this.query = tthis.query.select("-__v");
+      this.query = this.query.select("-__v");
     }
 
     return this;

@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uplodaProperyPhotos = exports.getAllProperties = exports.createProperty = void 0;
+exports.uplodaProperyPhotos = exports.updateProperty = exports.getSingleProperty = exports.getAllProperties = exports.createProperty = void 0;
 const property_model_1 = __importDefault(require("../models/schemas/property_model"));
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const cloudinary_1 = __importDefault(require("cloudinary"));
 const file_upload_1 = require("../utils/file_upload");
+const global_error_1 = require("../utils/global_error");
 const api_features_1 = require("../services/api_features");
 const cloud = cloudinary_1.default.v2;
 exports.createProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -54,6 +55,35 @@ exports.getAllProperties = (0, handle_async_1.default)((req, res, next) => __awa
         status: "success",
         results: properties.length,
         properties,
+    });
+}));
+exports.getSingleProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { slug } = req.params;
+    const property = yield property_model_1.default.findOne({ slug });
+    if (!property) {
+        return next(new global_error_1.GlobalError("Property not found", 404));
+    }
+    res.status(200).json({
+        status: "success",
+        property,
+    });
+}));
+exports.updateProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { slug } = req.params;
+    if (req.body.id || req.body._id) {
+        return next(new global_error_1.GlobalError("property ID cannot be modified", 404));
+    }
+    //@ts-ignore
+    const property = yield property_model_1.default.findOneAndUpdate(slug, req.body, {
+        new: true,
+        runValidators: true,
+    });
+    if (!property) {
+        return next(new global_error_1.GlobalError("Property not found", 404));
+    }
+    res.status(200).json({
+        status: "success",
+        property,
     });
 }));
 exports.uplodaProperyPhotos = file_upload_1.upload.array("images", 6);

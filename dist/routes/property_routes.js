@@ -8,4 +8,8 @@ router
     .route("/")
     .get(auth_middleware_1.requireAuth, (0, auth_middleware_1.restrictTo)("admin"), property_controller_1.getAllProperties)
     .post(auth_middleware_1.requireAuth, property_controller_1.uplodaProperyPhotos, property_controller_1.createProperty);
+router
+    .route("/:slug")
+    .get(auth_middleware_1.requireAuth, property_controller_1.getSingleProperty)
+    .patch(auth_middleware_1.requireAuth, (0, auth_middleware_1.restrictTo)("admin"), property_controller_1.updateProperty);
 exports.default = router;
