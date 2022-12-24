@@ -22,7 +22,7 @@ export const createReview = handleAsync(
 
 export const getAllReviews = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const reviews = await Review.find().select("-createdAt");
+    const reviews = await Review.find().sort("-createdAt");
 
     res.status(200).json({
       status: "success",

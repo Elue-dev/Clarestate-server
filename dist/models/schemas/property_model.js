@@ -78,12 +78,23 @@ const propertySchema = new mongoose_1.default.Schema({
     },
     addedBy: {
         type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "user",
     },
     slug: String,
+}, {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
 });
 propertySchema.pre("save", function (next) {
     this.slug = (0, slugify_1.default)(this.name, { lower: true });
+    next();
+});
+propertySchema.pre(/^find/, function (next) {
+    this.populate({
+        path: "addedBy",
+        select: "username photo",
+    });
     next();
 });
 const Property = mongoose_1.default.model("property", propertySchema);

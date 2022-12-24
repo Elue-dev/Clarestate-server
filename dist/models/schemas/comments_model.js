@@ -11,14 +11,28 @@ const commentSchema = new mongoose_1.default.Schema({
     },
     property: {
         type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "Tour",
+        ref: "property",
         required: [true, "A comment must belong to a property"],
     },
     user: {
         type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "user",
         required: [true, "A comment must belong to a user"],
     },
+}, {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+});
+commentSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: "property",
+        select: "name price location",
+    }).populate({
+        path: "user",
+        select: "username photo",
+    });
+    next();
 });
 const Comment = mongoose_1.default.model("comment", commentSchema);
 exports.default = Comment;

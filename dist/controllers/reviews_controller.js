@@ -28,7 +28,7 @@ exports.createReview = (0, handle_async_1.default)((req, res, next) => __awaiter
     });
 }));
 exports.getAllReviews = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const reviews = yield reviews_model_1.default.find().select("-createdAt");
+    const reviews = yield reviews_model_1.default.find().sort("-createdAt");
     res.status(200).json({
         status: "success",
         results: reviews.length,

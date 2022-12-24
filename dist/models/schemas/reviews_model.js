@@ -18,14 +18,28 @@ const reviewSchema = new mongoose_1.default.Schema({
     property: {
         //parent referencing
         type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "Tour",
+        ref: "property",
         required: [true, "A review must belong to a property"],
     },
     user: {
         type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "user",
         required: [true, "A review must belong to a user"],
     },
+}, {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+});
+reviewSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: "property",
+        select: "name price location",
+    }).populate({
+        path: "user",
+        select: "username photo",
+    });
+    next();
 });
 const Review = mongoose_1.default.model("review", reviewSchema);
 exports.default = Review;
