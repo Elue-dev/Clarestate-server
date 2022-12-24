@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uplodaProperyPhotos = exports.updateProperty = exports.getSingleProperty = exports.getAllProperties = exports.createProperty = void 0;
+exports.uplodaProperyPhotos = exports.deleteProperty = exports.updateProperty = exports.getSingleProperty = exports.getAllProperties = exports.createProperty = void 0;
 const property_model_1 = __importDefault(require("../models/schemas/property_model"));
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const cloudinary_1 = __importDefault(require("cloudinary"));
@@ -38,7 +38,7 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
         yield req.body.images.push(uploadedFiles.secure_url);
     })));
     const property = yield property_model_1.default.create(req.body);
-    res.status(200).json({
+    res.status(201).json({
         status: "success",
         property,
     });
@@ -69,12 +69,12 @@ exports.getSingleProperty = (0, handle_async_1.default)((req, res, next) => __aw
     });
 }));
 exports.updateProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { slug } = req.params;
+    const { propertyID } = req.params;
     if (req.body.id || req.body._id) {
         return next(new global_error_1.GlobalError("property ID cannot be modified", 404));
     }
     //@ts-ignore
-    const property = yield property_model_1.default.findOneAndUpdate(slug, req.body, {
+    const property = yield property_model_1.default.findByIdAndUpdate(propertyID, req.body, {
         new: true,
         runValidators: true,
     });
@@ -84,6 +84,25 @@ exports.updateProperty = (0, handle_async_1.default)((req, res, next) => __await
     res.status(200).json({
         status: "success",
         property,
+    });
+}));
+exports.deleteProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { propertyID } = req.params;
+    if (req.body.id || req.body._id) {
+        return next(new global_error_1.GlobalError("property ID cannot be modified", 404));
+    }
+    const property = yield property_model_1.default.findById(propertyID);
+    if (!property) {
+        return next(new global_error_1.GlobalError("Property not found", 404));
+    }
+    //@ts-ignore
+    if (property.addedBy !== req.user._id && req.user.role !== "admin") {
+        return next(new global_error_1.GlobalError("You can only delete properties you created", 404));
+    }
+    yield property_model_1.default.findByIdAndDelete(propertyID);
+    res.status(200).json({
+        status: "success",
+        message: "Property deleted successfully",
     });
 }));
 exports.uplodaProperyPhotos = file_upload_1.upload.array("images", 6);

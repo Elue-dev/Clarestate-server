@@ -30,6 +30,16 @@ const propertySchema = new mongoose.Schema({
     type: String,
     required: [true, "Please specify the availability of this property"],
   },
+  ratingsAverage: {
+    type: Number,
+    default: 4.5,
+    min: [1, "A property must have a rating of at least 1"],
+    max: [5, "A property cannot have a rating of more than 5"],
+  },
+  ratingsQuantity: {
+    type: Number,
+    default: 0,
+  },
   purpose: {
     type: String,
     required: [true, "Please specify the purpose of this property"],

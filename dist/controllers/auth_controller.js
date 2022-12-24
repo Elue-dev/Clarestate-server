@@ -254,6 +254,7 @@ exports.updatePassword = (0, handle_async_1.default)((req, res, next) => __await
     }
     //@ts-ignore
     user.password = newPassword;
+    yield (user === null || user === void 0 ? void 0 : user.save());
     const userAgent = (0, ua_parser_js_1.default)(req.headers["user-agent"]);
     const browser = userAgent.browser.name || "Not detected";
     const OS = `${userAgent.os.name || "Not detected"} (${userAgent.os.version || "Not detected"})`;

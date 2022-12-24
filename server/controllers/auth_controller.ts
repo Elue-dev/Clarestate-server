@@ -328,6 +328,8 @@ export const updatePassword = handleAsync(
     //@ts-ignore
     user.password = newPassword;
 
+    await user?.save();
+
     const userAgent = parser(req.headers["user-agent"]);
 
     const browser = userAgent.browser.name || "Not detected";

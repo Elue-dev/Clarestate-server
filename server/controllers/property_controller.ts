@@ -33,7 +33,7 @@ export const createProperty = handleAsync(
 
     const property = await Property.create(req.body);
 
-    res.status(200).json({
+    res.status(201).json({
       status: "success",
       property,
     });
@@ -78,14 +78,14 @@ export const getSingleProperty = handleAsync(
 
 export const updateProperty = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { slug } = req.params;
+    const { propertyID } = req.params;
 
     if (req.body.id || req.body._id) {
       return next(new GlobalError("property ID cannot be modified", 404));
     }
 
     //@ts-ignore
-    const property = await Property.findOneAndUpdate(slug, req.body, {
+    const property = await Property.findByIdAndUpdate(propertyID, req.body, {
       new: true,
       runValidators: true,
     });
@@ -97,6 +97,36 @@ export const updateProperty = handleAsync(
     res.status(200).json({
       status: "success",
       property,
+    });
+  }
+);
+
+export const deleteProperty = handleAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { propertyID } = req.params;
+
+    if (req.body.id || req.body._id) {
+      return next(new GlobalError("property ID cannot be modified", 404));
+    }
+
+    const property = await Property.findById(propertyID);
+
+    if (!property) {
+      return next(new GlobalError("Property not found", 404));
+    }
+
+    //@ts-ignore
+    if (property.addedBy !== req.user._id && req.user.role !== "admin") {
+      return next(
+        new GlobalError("You can only delete properties you created", 404)
+      );
+    }
+
+    await Property.findByIdAndDelete(propertyID);
+
+    res.status(200).json({
+      status: "success",
+      message: "Property deleted successfully",
     });
   }
 );

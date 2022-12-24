@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   createProperty,
+  deleteProperty,
   getAllProperties,
   getSingleProperty,
   updateProperty,
@@ -15,9 +16,11 @@ router
   .get(requireAuth, restrictTo("admin"), getAllProperties)
   .post(requireAuth, uplodaProperyPhotos, createProperty);
 
+router.get("/:slug", requireAuth, getSingleProperty);
+
 router
-  .route("/:slug")
-  .get(requireAuth, getSingleProperty)
-  .patch(requireAuth, restrictTo("admin"), updateProperty);
+  .route("/:propertyID")
+  .patch(requireAuth, restrictTo("admin"), updateProperty)
+  .delete(requireAuth, deleteProperty);
 
 export default router;
