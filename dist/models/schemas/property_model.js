@@ -24,7 +24,6 @@ const propertySchema = new mongoose_1.default.Schema({
     images: {
         type: [String],
         required: [true, "Images of property is required"],
-        // default: {},
     },
     features: {
         type: [String],
@@ -36,7 +35,7 @@ const propertySchema = new mongoose_1.default.Schema({
     },
     ratingsAverage: {
         type: Number,
-        default: 4.5,
+        default: 0,
         min: [1, "A property must have a rating of at least 1"],
         max: [5, "A property cannot have a rating of more than 5"],
     },

@@ -96,6 +96,7 @@ export const updateProperty = handleAsync(
 
     res.status(200).json({
       status: "success",
+      message: "Property updated successfully",
       property,
     });
   }
@@ -118,7 +119,7 @@ export const deleteProperty = handleAsync(
     //@ts-ignore
     if (property.addedBy !== req.user._id && req.user.role !== "admin") {
       return next(
-        new GlobalError("You can only delete properties you created", 404)
+        new GlobalError("You can only delete properties you added", 401)
       );
     }
 

@@ -11,15 +11,15 @@ const reviewSchema = new mongoose_1.default.Schema({
     },
     rating: {
         type: Number,
-        min: 1,
-        max: 5,
+        min: [1, "A property must have a rating of at least 1"],
+        max: [5, "A property cannot have a rating of more than 5"],
         required: [true, "Please leave a rating"],
     },
-    tour: {
+    property: {
         //parent referencing
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "Tour",
-        required: [true, "A review must belong to a tour"],
+        required: [true, "A review must belong to a property"],
     },
     user: {
         type: mongoose_1.default.Schema.Types.ObjectId,

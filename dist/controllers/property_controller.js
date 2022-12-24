@@ -83,6 +83,7 @@ exports.updateProperty = (0, handle_async_1.default)((req, res, next) => __await
     }
     res.status(200).json({
         status: "success",
+        message: "Property updated successfully",
         property,
     });
 }));
@@ -97,7 +98,7 @@ exports.deleteProperty = (0, handle_async_1.default)((req, res, next) => __await
     }
     //@ts-ignore
     if (property.addedBy !== req.user._id && req.user.role !== "admin") {
-        return next(new global_error_1.GlobalError("You can only delete properties you created", 404));
+        return next(new global_error_1.GlobalError("You can only delete properties you added", 401));
     }
     yield property_model_1.default.findByIdAndDelete(propertyID);
     res.status(200).json({
