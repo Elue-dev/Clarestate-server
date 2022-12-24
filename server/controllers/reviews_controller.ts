@@ -61,9 +61,7 @@ export const updateReview = handleAsync(
 
     if (
       //@ts-ignore
-      req.user._id.toString() !== review.user.toString() &&
-      //@ts-ignore
-      req.user.role !== "admin"
+      req.user._id.toString() !== review.user.toString()
     ) {
       return next(
         new GlobalError("You can only update reviews you added", 401)
@@ -101,9 +99,7 @@ export const deleteReview = handleAsync(
 
     if (
       //@ts-ignore
-      req.user._id.toString() !== review.user.toString() &&
-      //@ts-ignore
-      req.user.role !== "admin"
+      req.user._id.toString() !== review.user.toString()
     ) {
       return next(
         new GlobalError("You can only delete reviews you added", 401)

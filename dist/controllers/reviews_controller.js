@@ -54,9 +54,7 @@ exports.updateReview = (0, handle_async_1.default)((req, res, next) => __awaiter
     }
     if (
     //@ts-ignore
-    req.user._id.toString() !== review.user.toString() &&
-        //@ts-ignore
-        req.user.role !== "admin") {
+    req.user._id.toString() !== review.user.toString()) {
         return next(new global_error_1.GlobalError("You can only update reviews you added", 401));
     }
     if (req.body.user || req.body.property || req.body.id || req.body._id) {
@@ -80,9 +78,7 @@ exports.deleteReview = (0, handle_async_1.default)((req, res, next) => __awaiter
     }
     if (
     //@ts-ignore
-    req.user._id.toString() !== review.user.toString() &&
-        //@ts-ignore
-        req.user.role !== "admin") {
+    req.user._id.toString() !== review.user.toString()) {
         return next(new global_error_1.GlobalError("You can only delete reviews you added", 401));
     }
     yield reviews_model_1.default.findByIdAndDelete(reviewID);

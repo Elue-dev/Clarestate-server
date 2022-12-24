@@ -62,9 +62,7 @@ export const updateComment = handleAsync(
 
     if (
       //@ts-ignore
-      req.user._id.toString() !== comment.user.toString() &&
-      //@ts-ignore
-      req.user.role !== "admin"
+      req.user._id.toString() !== comment.user.toString()
     ) {
       return next(
         new GlobalError("You can only update comments you added", 401)
@@ -96,9 +94,7 @@ export const deleteComment = handleAsync(
 
     if (
       //@ts-ignore
-      req.user._id.toString() !== comment.user.toString() &&
-      //@ts-ignore
-      req.user.role !== "admin"
+      req.user._id.toString() !== comment.user.toString()
     ) {
       return next(
         new GlobalError("You can only delete comments you added", 401)
