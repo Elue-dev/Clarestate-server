@@ -14,4 +14,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.contactUs = void 0;
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
-exports.contactUs = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () { }));
+const global_error_1 = require("../utils/global_error");
+const email_service_1 = __importDefault(require("../services/email_service"));
+const user_model_1 = __importDefault(require("../models/schemas/user_model"));
+exports.contactUs = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { subject, message } = req.body;
+    //@ts-ignore
+    const user = yield user_model_1.default.findById(req.user._id);
+    if (!user) {
+        return next(new global_error_1.GlobalError("User not found, please sign up", 404));
+    }
+    if (!subject || !message) {
+        return next(new global_error_1.GlobalError("Both the subject and message are required", 400));
+    }
+    const send_to = process.env.ADMIN;
+    const sent_from = process.env.EMAIL_USER;
+    const reply_to = user.email;
+    try {
+        (0, email_service_1.default)({ subject, body: message, send_to, sent_from, reply_to });
+        res.status(200).json({
+            status: "success",
+            message: "Email sent successfully. Thank you for contacting us",
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            status: "fail",
+            message: `Email not sent. Please try again.`,
+        });
+    }
+}));
