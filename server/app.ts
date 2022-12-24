@@ -15,8 +15,11 @@ import authRouter from "./routes/auth_routes";
 import reviewRouter from "./routes/review_routes";
 import commentRouter from "./routes/comment_routes";
 import contactRouter from "./routes/contact_route";
+import path from "path";
 
 const app = express();
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(cors());
 

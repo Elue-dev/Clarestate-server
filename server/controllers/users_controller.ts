@@ -85,6 +85,15 @@ export const updateLoggedInUser = handleAsync(
       );
     }
 
+    if (req.body.password) {
+      return next(
+        new GlobalError(
+          "This route is not for password updates. Please use the forgot password route",
+          400
+        )
+      );
+    }
+
     const filteredBody = filteredObj(
       req.body,
       "username",
