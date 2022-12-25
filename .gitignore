@@ -1,6 +1,7 @@
 /node_modules
 .env
 utils/cryptr.ts
+dist/utils/cryptr.js
 /dist/utils/cryptr.js
 /utils/cryptr.ts
 cryptr.ts
