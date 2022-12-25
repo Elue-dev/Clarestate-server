@@ -41,10 +41,7 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
     verificationCode: String,
-    codeExpires: {
-      type: Date,
-      // required: true,
-    },
+    codeExpires: Date,
     isVerified: {
       type: Boolean,
       default: false,
@@ -57,6 +54,7 @@ const userSchema = new mongoose.Schema(
     userAgents: {
       type: Array,
       required: true,
+      select: false,
       default: [],
     },
   },
@@ -68,12 +66,6 @@ userSchema.pre("save", async function (next) {
 
   const salt = await genSalt(10);
   this.password = await hash(this.password, salt);
-
-  next();
-});
-
-userSchema.pre(/^find/, function (next) {
-  this.find({ active: { $ne: false } });
 
   next();
 });

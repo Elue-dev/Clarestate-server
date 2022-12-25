@@ -5,6 +5,7 @@ import {
   login,
   logout,
   resetPassword,
+  sendVerificationCode,
   signup,
   updatePassword,
   verifyCode,
@@ -15,6 +16,7 @@ const router = Router();
 
 router.post("/signup", signup);
 router.post("/verify-email/:userID", verifyCode);
+router.post("/send-verification-code", sendVerificationCode);
 router.post("/login", login);
 router.get("/logout", logout);
 router.post("/forgot-password", forgotPassword);

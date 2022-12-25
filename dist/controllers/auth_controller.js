@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updatePassword = exports.resetPassword = exports.forgotPassword = exports.logout = exports.login = exports.verifyCode = exports.signup = void 0;
+exports.updatePassword = exports.resetPassword = exports.forgotPassword = exports.logout = exports.login = exports.sendVerificationCode = exports.verifyCode = exports.signup = void 0;
 const user_model_1 = __importDefault(require("../models/schemas/user_model"));
 const auth_service_1 = require("../services/auth_service");
 const email_service_1 = __importDefault(require("../services/email_service"));
@@ -86,16 +86,16 @@ exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(v
         codeExpires: { $gt: Date.now() },
     });
     if (!user) {
-        return next(new global_error_1.GlobalError("Email already verified or user dosen't exist", 400));
+        return next(new global_error_1.GlobalError("Email already verified or account dosen't exist", 404));
     }
-    const decryptedCode = cryptr_1.cryptr.decrypt(user.verificationCode);
+    const decryptedCode = cryptr_1.cryptr.decrypt(user === null || user === void 0 ? void 0 : user.verificationCode);
     if (decryptedCode !== code) {
         return next(new global_error_1.GlobalError("Invalid or expired verification code", 400));
     }
     user.verificationCode = undefined;
+    user.codeExpires = undefined;
     user.isVerified = true;
     user.active = true;
-    user.codeExpires = undefined;
     yield user.save();
     const subject = `Welcome Onboard, ${user.first_name}!`;
     const send_to = user.email;
@@ -113,6 +113,49 @@ exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(v
     }
     (0, auth_service_1.createAndSendToken)(user, 201, res);
 }));
+exports.sendVerificationCode = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.body;
+    if (!email) {
+        return next(new global_error_1.GlobalError("Please provide your email", 400));
+    }
+    const user = yield user_model_1.default.findOne({ email });
+    //@ts-ignore
+    if (!user || user.isVerified) {
+        return next(new global_error_1.GlobalError("Email already verified or account dosen't exist", 400));
+    }
+    const code = Math.floor(100000 + Math.random() * 900000);
+    const verificationCode = code.toString();
+    const encryptedCode = cryptr_1.cryptr.encrypt(verificationCode);
+    //@ts-ignore
+    user.verificationCode = encryptedCode;
+    //@ts-ignore
+    user.codeExpires = Date.now() + 60 * (60 * 1000);
+    //@ts-ignore
+    yield user.save();
+    const subject = `${user.last_name}, you requested a verification code`;
+    const send_to = email;
+    const sent_from = process.env.EMAIL_USER;
+    const reply_to = process.env.REPLY_TO;
+    const url = `https://test.com/${user._id}`;
+    const body = (0, verification_email_1.verificationEmail)({
+        username: user.first_name,
+        verificationCode,
+        url,
+    });
+    try {
+        (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
+        res.status(200).json({
+            status: "success",
+            message: `A verification code has been sent to ${user.email}`,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            status: "fail",
+            message: `Email not sent. please try again!`,
+        });
+    }
+}));
 exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password, phone } = req.body;
     if ((!email && !phone) || !password) {
@@ -120,7 +163,9 @@ exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0
     }
     const user = yield user_model_1.default.findOne({
         $or: [{ email }, { phone }],
-    }).select("+password");
+    })
+        .select("+password")
+        .select("+userAgents");
     //@ts-ignore
     if (!user || !(yield user.correctPassword(password, user.password))) {
         return next(new global_error_1.GlobalError("Invalid credentials provided", 400));
@@ -130,6 +175,8 @@ exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0
         user.userAgents.push(userAgent.ua);
     }
     yield user.save();
+    //@ts-ignore
+    user === null || user === void 0 ? void 0 : user.userAgents = undefined;
     (0, auth_service_1.createAndSendToken)(user, 200, res);
 }));
 exports.logout = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

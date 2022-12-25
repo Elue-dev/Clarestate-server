@@ -53,10 +53,7 @@ const userSchema = new mongoose_1.default.Schema({
         default: "user",
     },
     verificationCode: String,
-    codeExpires: {
-        type: Date,
-        // required: true,
-    },
+    codeExpires: Date,
     isVerified: {
         type: Boolean,
         default: false,
@@ -69,6 +66,7 @@ const userSchema = new mongoose_1.default.Schema({
     userAgents: {
         type: Array,
         required: true,
+        select: false,
         default: [],
     },
 }, { timestamps: true });
@@ -80,10 +78,6 @@ userSchema.pre("save", function (next) {
         this.password = yield (0, bcryptjs_1.hash)(this.password, salt);
         next();
     });
-});
-userSchema.pre(/^find/, function (next) {
-    this.find({ active: { $ne: false } });
-    next();
 });
 userSchema.methods.correctPassword = function (providedPassword, userPassword) {
     return __awaiter(this, void 0, void 0, function* () {

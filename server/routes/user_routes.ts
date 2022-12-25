@@ -4,7 +4,6 @@ import {
   getAllUsers,
   updateUser,
   deleteUser,
-  updateLoggedInUser,
   getLoggedInUser,
   deleteLoggedInUser,
 } from "../controllers/users_controller";
@@ -14,7 +13,6 @@ const router = Router();
 
 router.use(requireAuth);
 
-router.patch("/update-me", updateLoggedInUser);
 router.get("/get-me", getLoggedInUser);
 router.delete("/delete-me", deleteLoggedInUser);
 

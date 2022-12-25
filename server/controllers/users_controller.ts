@@ -7,9 +7,9 @@ import { deleteAccount } from "../views/delete_account";
 
 export const getAllUsers = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const users = await User.find().sort("-createdAt");
-
-    console.log("start");
+    const users = await User.find({ active: { $ne: false } })
+      .sort("-createdAt")
+      .select("+active");
 
     res.status(200).json({
       status: "success",
@@ -23,10 +23,13 @@ export const getSingleUser = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userID } = req.params;
 
-    const user = await User.findById(userID);
+    const user = await User.findOne({
+      _id: userID,
+      active: { $ne: false },
+    });
 
     if (!user) {
-      return next(new GlobalError("No user with that id exists", 404));
+      return next(new GlobalError("No user found", 404));
     }
 
     res.status(200).json({
@@ -41,10 +44,13 @@ export const updateUser = handleAsync(
     const { userID } = req.params;
     const { isVerified } = req.body;
 
-    const user = await User.findById(userID);
+    const user = await User.findOne({
+      _id: userID,
+      active: { $ne: false },
+    });
 
     if (!user) {
-      return next(new GlobalError("No user with that id exists", 404));
+      return next(new GlobalError("No user found", 404));
     }
 
     if (isVerified) {
@@ -58,7 +64,7 @@ export const updateUser = handleAsync(
 
     if (
       //@ts-ignore
-      req.user._id.toString() !== userID ||
+      req.user._id.toString() !== userID &&
       //@ts-ignore
       req.user.role !== "admin"
     ) {
@@ -86,64 +92,12 @@ export const updateUser = handleAsync(
   }
 );
 
-export const updateLoggedInUser = handleAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    //@ts-ignore
-    const user = await User.findById(req.user._id);
-
-    const { username, email, bio, photo, phone } = req.body;
-
-    if (!user) {
-      return next(new GlobalError("User not found", 404));
-    }
-
-    if (!username && !email && !bio && !phone && !photo) {
-      return next(
-        new GlobalError("Please provide fields you want to update", 400)
-      );
-    }
-
-    if (req.body.password) {
-      return next(
-        new GlobalError(
-          "This route is not for password updates. Please use the forgot password route",
-          400
-        )
-      );
-    }
-
-    const filteredBody = filteredObj(
-      req.body,
-      "username",
-      "email",
-      "photo",
-      "bio",
-      "phone"
-    );
-
-    const updatedUser = await User.findByIdAndUpdate(
-      //@ts-ignore
-      req.user._id,
-      filteredBody,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-
-    res.status(200).json({
-      status: "success",
-      updatedUser,
-    });
-  }
-);
-
 export const getLoggedInUser = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     //@ts-ignore
     const user = await User.findById(req.user._id).select("+active");
 
-    if (!user) {
+    if (!user || !user.active) {
       return next(new GlobalError("User not found", 404));
     }
 
@@ -159,7 +113,7 @@ export const deleteLoggedInUser = handleAsync(
     //@ts-ignore
     const user = await User.findById(req.user._id).select("+active");
 
-    if (!user) {
+    if (!user || !user.active) {
       return next(new GlobalError("User not found", 404));
     }
 
@@ -196,19 +150,18 @@ export const deleteUser = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userID } = req.params;
 
-    const user = await User.findById(userID).select("+active");
+    const user = await User.findOne({
+      _id: userID,
+      active: { $ne: false },
+    });
 
     if (!user) {
-      return next(new GlobalError("No user with that id exists", 404));
-    }
-
-    if (!user.active) {
-      return next(new GlobalError("User already deleted", 404));
+      return next(new GlobalError("No user found", 404));
     }
 
     if (
       //@ts-ignore
-      req.user._id.toString() !== userID ||
+      req.user._id.toString() !== userID &&
       //@ts-ignore
       req.user.role !== "admin"
     ) {

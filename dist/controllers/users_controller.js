@@ -12,15 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.deleteLoggedInUser = exports.getLoggedInUser = exports.updateLoggedInUser = exports.updateUser = exports.getSingleUser = exports.getAllUsers = void 0;
+exports.deleteUser = exports.deleteLoggedInUser = exports.getLoggedInUser = exports.updateUser = exports.getSingleUser = exports.getAllUsers = void 0;
 const user_model_1 = __importDefault(require("../models/schemas/user_model"));
 const email_service_1 = __importDefault(require("../services/email_service"));
 const global_error_1 = require("../utils/global_error");
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const delete_account_1 = require("../views/delete_account");
 exports.getAllUsers = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const users = yield user_model_1.default.find().sort("-createdAt");
-    console.log("start");
+    const users = yield user_model_1.default.find({ active: { $ne: false } })
+        .sort("-createdAt")
+        .select("+active");
     res.status(200).json({
         status: "success",
         results: users.length,
@@ -29,9 +30,12 @@ exports.getAllUsers = (0, handle_async_1.default)((req, res, next) => __awaiter(
 }));
 exports.getSingleUser = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { userID } = req.params;
-    const user = yield user_model_1.default.findById(userID);
+    const user = yield user_model_1.default.findOne({
+        _id: userID,
+        active: { $ne: false },
+    });
     if (!user) {
-        return next(new global_error_1.GlobalError("No user with that id exists", 404));
+        return next(new global_error_1.GlobalError("No user found", 404));
     }
     res.status(200).json({
         status: "success",
@@ -41,16 +45,19 @@ exports.getSingleUser = (0, handle_async_1.default)((req, res, next) => __awaite
 exports.updateUser = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { userID } = req.params;
     const { isVerified } = req.body;
-    const user = yield user_model_1.default.findById(userID);
+    const user = yield user_model_1.default.findOne({
+        _id: userID,
+        active: { $ne: false },
+    });
     if (!user) {
-        return next(new global_error_1.GlobalError("No user with that id exists", 404));
+        return next(new global_error_1.GlobalError("No user found", 404));
     }
     if (isVerified) {
         return next(new global_error_1.GlobalError("You are not allowed to change user verification status", 401));
     }
     if (
     //@ts-ignore
-    req.user._id.toString() !== userID ||
+    req.user._id.toString() !== userID &&
         //@ts-ignore
         req.user.role !== "admin") {
         return next(new global_error_1.GlobalError("You can only update your own account", 401));
@@ -67,35 +74,10 @@ exports.updateUser = (0, handle_async_1.default)((req, res, next) => __awaiter(v
         updatedUser,
     });
 }));
-exports.updateLoggedInUser = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    //@ts-ignore
-    const user = yield user_model_1.default.findById(req.user._id);
-    const { username, email, bio, photo, phone } = req.body;
-    if (!user) {
-        return next(new global_error_1.GlobalError("User not found", 404));
-    }
-    if (!username && !email && !bio && !phone && !photo) {
-        return next(new global_error_1.GlobalError("Please provide fields you want to update", 400));
-    }
-    if (req.body.password) {
-        return next(new global_error_1.GlobalError("This route is not for password updates. Please use the forgot password route", 400));
-    }
-    const filteredBody = filteredObj(req.body, "username", "email", "photo", "bio", "phone");
-    const updatedUser = yield user_model_1.default.findByIdAndUpdate(
-    //@ts-ignore
-    req.user._id, filteredBody, {
-        new: true,
-        runValidators: true,
-    });
-    res.status(200).json({
-        status: "success",
-        updatedUser,
-    });
-}));
 exports.getLoggedInUser = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const user = yield user_model_1.default.findById(req.user._id).select("+active");
-    if (!user) {
+    if (!user || !user.active) {
         return next(new global_error_1.GlobalError("User not found", 404));
     }
     res.status(200).json({
@@ -106,7 +88,7 @@ exports.getLoggedInUser = (0, handle_async_1.default)((req, res, next) => __awai
 exports.deleteLoggedInUser = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const user = yield user_model_1.default.findById(req.user._id).select("+active");
-    if (!user) {
+    if (!user || !user.active) {
         return next(new global_error_1.GlobalError("User not found", 404));
     }
     if (!user.active) {
@@ -135,16 +117,16 @@ exports.deleteLoggedInUser = (0, handle_async_1.default)((req, res, next) => __a
 }));
 exports.deleteUser = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { userID } = req.params;
-    const user = yield user_model_1.default.findById(userID).select("+active");
+    const user = yield user_model_1.default.findOne({
+        _id: userID,
+        active: { $ne: false },
+    });
     if (!user) {
-        return next(new global_error_1.GlobalError("No user with that id exists", 404));
-    }
-    if (!user.active) {
-        return next(new global_error_1.GlobalError("User already deleted", 404));
+        return next(new global_error_1.GlobalError("No user found", 404));
     }
     if (
     //@ts-ignore
-    req.user._id.toString() !== userID ||
+    req.user._id.toString() !== userID &&
         //@ts-ignore
         req.user.role !== "admin") {
         return next(new global_error_1.GlobalError("You can only delete your own account", 401));

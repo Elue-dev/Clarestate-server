@@ -91,20 +91,20 @@ export const verifyCode = handleAsync(
 
     if (!user) {
       return next(
-        new GlobalError("Email already verified or user dosen't exist", 400)
+        new GlobalError("Email already verified or account dosen't exist", 404)
       );
     }
 
-    const decryptedCode = cryptr.decrypt(user.verificationCode as string);
+    const decryptedCode = cryptr.decrypt(user?.verificationCode as string);
 
     if (decryptedCode !== code) {
       return next(new GlobalError("Invalid or expired verification code", 400));
     }
 
     user.verificationCode = undefined;
+    user.codeExpires = undefined;
     user.isVerified = true;
     user.active = true;
-    user.codeExpires = undefined;
 
     await user.save();
 
@@ -127,6 +127,60 @@ export const verifyCode = handleAsync(
   }
 );
 
+export const sendVerificationCode = handleAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
+
+    if (!email) {
+      return next(new GlobalError("Please provide your email", 400));
+    }
+
+    const user = await User.findOne({ email });
+
+    //@ts-ignore
+    if (!user || user.isVerified) {
+      return next(
+        new GlobalError("Email already verified or account dosen't exist", 400)
+      );
+    }
+
+    const code = Math.floor(100000 + Math.random() * 900000);
+    const verificationCode = code.toString();
+
+    const encryptedCode = cryptr.encrypt(verificationCode);
+    //@ts-ignore
+    user.verificationCode = encryptedCode;
+    //@ts-ignore
+    user.codeExpires = Date.now() + 60 * (60 * 1000);
+    //@ts-ignore
+    await user.save();
+
+    const subject = `${user.last_name}, you requested a verification code`;
+    const send_to = email;
+    const sent_from = process.env.EMAIL_USER as string;
+    const reply_to = process.env.REPLY_TO as string;
+    const url = `https://test.com/${user._id}`;
+    const body = verificationEmail({
+      username: user.first_name,
+      verificationCode,
+      url,
+    });
+
+    try {
+      sendEmail({ subject, body, send_to, sent_from, reply_to });
+      res.status(200).json({
+        status: "success",
+        message: `A verification code has been sent to ${user.email}`,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "fail",
+        message: `Email not sent. please try again!`,
+      });
+    }
+  }
+);
+
 export const login = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password, phone } = req.body;
@@ -139,7 +193,9 @@ export const login = handleAsync(
 
     const user = await User.findOne({
       $or: [{ email }, { phone }],
-    }).select("+password");
+    })
+      .select("+password")
+      .select("+userAgents");
 
     //@ts-ignore
     if (!user || !(await user.correctPassword(password, user.password))) {
@@ -153,6 +209,9 @@ export const login = handleAsync(
     }
 
     await user.save();
+
+    //@ts-ignore
+    user?.userAgents = undefined;
 
     createAndSendToken(user, 200, res);
   }
