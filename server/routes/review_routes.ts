@@ -8,7 +8,7 @@ import {
 } from "../controllers/reviews_controller";
 import { requireAuth, restrictTo } from "../middlewares/auth_middleware";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use(requireAuth);
 

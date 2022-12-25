@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Property from "./property_model";
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -36,15 +37,13 @@ reviewSchema.index({ property: 1, user: 1 }, { unique: true });
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
     path: "user",
-    select: "username photo",
+    select: "first_name last_name photo",
   });
 
   next();
 });
 
 reviewSchema.statics.calcAverageRatings = async function (propertyID) {
-  console.log(propertyID);
-
   const ratingStats = await this.aggregate([
     {
       $match: { property: propertyID },
@@ -52,20 +51,21 @@ reviewSchema.statics.calcAverageRatings = async function (propertyID) {
     {
       $group: {
         _id: "$property",
-        numRatings: { $sum: 1 },
+        nRating: { $sum: 1 },
         avgRating: { $avg: "$rating" },
       },
     },
   ]);
 
-  console.log(ratingStats);
+  await Property.findByIdAndUpdate(propertyID, {
+    ratingsQuantity: ratingStats[0].nRating,
+    ratingsAverage: ratingStats[0].avgRating,
+  });
 };
 
-reviewSchema.pre("save", function (next) {
+reviewSchema.post("save", function () {
   //@ts-ignore
   this.constructor.calcAverageRatings(this.property);
-
-  next();
 });
 
 const Review = mongoose.model("review", reviewSchema);

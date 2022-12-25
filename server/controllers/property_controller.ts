@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import Property from "../models/schemas/property_model";
 import handleAsync from "../utils/handle_async";
 import cloudinary from "cloudinary";
-import { fileSizeFormatter, upload } from "../utils/file_upload";
+import { upload } from "../utils/file_upload";
 import { GlobalError } from "../utils/global_error";
 import { APIFeatures } from "../services/api_features";
 import Review from "../models/schemas/reviews_model";
@@ -42,7 +42,7 @@ export const createProperty = handleAsync(
 );
 
 export const getAllProperties = handleAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     //@ts-ignore
     const features = new APIFeatures(Property.find(), req.query)
       .filter()

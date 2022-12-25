@@ -47,7 +47,7 @@ export const verificationSuccess = (username: string) => {
                                                 <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">We hope you enjoy our services and have a nice experience with us. Feel free to reach out to us for any questions you may have.</p>
                                                 </span>
 
-                                                <span style='text-align:left'>
+                                                <span style='text-align:left; font-size: 18px;'>
                                                 <p>Regards,<br> Clarestate team.</p>
                                                 </span>
                                             </td>

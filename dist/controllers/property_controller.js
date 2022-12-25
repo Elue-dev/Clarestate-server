@@ -44,7 +44,7 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
         property,
     });
 }));
-exports.getAllProperties = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getAllProperties = (0, handle_async_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const features = new api_features_1.APIFeatures(property_model_1.default.find(), req.query)
         .filter()

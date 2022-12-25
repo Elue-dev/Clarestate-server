@@ -59,7 +59,7 @@ export const resetSuccess = ({ username, browser, OS }: resetSuccessType) => {
                                                   <p style="color:#455056; font-size:15px;line-height:24px; margin:0;"><b>Device:</b> ${OS}</p>
                                                   </span>
                                                     <br>
-                                                  <span style='text-align:left; font-size: 23px;'>
+                                                  <span style='text-align:left; font-size: 18px;'>
                                                   <p>Regards,<br> Clarestate team.</p>
                                                   </span>
                                               </td>

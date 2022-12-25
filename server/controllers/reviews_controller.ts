@@ -7,8 +7,14 @@ export const createReview = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { review, rating, user, property } = req.body;
 
-    if (!review || !rating || !user || !property) {
-      return next(new GlobalError("Please provide all required fields", 400));
+    if (!property) req.body.property = req.params.propertyID;
+    //@ts-ignore
+    if (!user) req.body.user = req.user._id;
+
+    if (!review || !rating) {
+      return next(
+        new GlobalError("Please provide both rating and review", 400)
+      );
     }
 
     //@ts-ignore
@@ -32,8 +38,12 @@ export const createReview = handleAsync(
 );
 
 export const getAllReviews = handleAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const reviews = await Review.find().sort("-createdAt");
+  async (req: Request, res: Response) => {
+    let filter = {};
+    //@ts-ignore
+    if (req.params.propertyID) filter = { property: req.params.propertyID };
+
+    const reviews = await Review.find(filter).sort("-createdAt");
 
     res.status(200).json({
       status: "success",
@@ -72,7 +82,7 @@ export const updateReview = handleAsync(
 
     if (
       //@ts-ignore
-      req.user._id.toString() !== review.user.toString()
+      req.user._id.toString() !== review.user._id.toString()
     ) {
       return next(
         new GlobalError("You can only update reviews you added", 401)
@@ -110,7 +120,7 @@ export const deleteReview = handleAsync(
 
     if (
       //@ts-ignore
-      req.user._id.toString() !== review.user.toString()
+      req.user._id.toString() !== review.user._id.toString()
     ) {
       return next(
         new GlobalError("You can only delete reviews you added", 401)

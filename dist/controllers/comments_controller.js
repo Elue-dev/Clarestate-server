@@ -12,14 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteComment = exports.updateComment = exports.getSingleComment = exports.gettAllComments = exports.createComment = void 0;
+exports.deleteComment = exports.updateComment = exports.getSingleComment = exports.getAllComments = exports.createComment = void 0;
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const global_error_1 = require("../utils/global_error");
 const comments_model_1 = __importDefault(require("../models/schemas/comments_model"));
 exports.createComment = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { comment, user, property } = req.body;
-    if (!comment || !user || !property) {
-        return next(new global_error_1.GlobalError("comment, user and property are all required", 400));
+    if (!property)
+        req.body.property = req.params.propertyID;
+    //@ts-ignore
+    if (!user)
+        req.body.user = req.user._id;
+    if (!comment) {
+        return next(new global_error_1.GlobalError("Please add your comment", 400));
     }
     const newComment = yield comments_model_1.default.create(req.body);
     res.status(201).json({
@@ -28,10 +33,15 @@ exports.createComment = (0, handle_async_1.default)((req, res, next) => __awaite
         comment: newComment,
     });
 }));
-exports.gettAllComments = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const comments = yield comments_model_1.default.find().sort("-createdAt");
+exports.getAllComments = (0, handle_async_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let filter = {};
+    //@ts-ignore
+    if (req.params.propertyID)
+        filter = { property: req.params.propertyID };
+    const comments = yield comments_model_1.default.find(filter).sort("-createdAt");
     res.status(200).json({
         status: "success",
+        results: comments.length,
         comments,
     });
 }));
@@ -54,7 +64,7 @@ exports.updateComment = (0, handle_async_1.default)((req, res, next) => __awaite
     }
     if (
     //@ts-ignore
-    req.user._id.toString() !== comment.user.toString()) {
+    req.user._id.toString() !== comment.user._id.toString()) {
         return next(new global_error_1.GlobalError("You can only update comments you added", 401));
     }
     const newComment = yield comments_model_1.default.findByIdAndUpdate(commentID, req.body, {
@@ -75,7 +85,7 @@ exports.deleteComment = (0, handle_async_1.default)((req, res, next) => __awaite
     }
     if (
     //@ts-ignore
-    req.user._id.toString() !== comment.user.toString()) {
+    req.user._id.toString() !== comment.user._id.toString()) {
         return next(new global_error_1.GlobalError("You can only delete comments you added", 401));
     }
     yield comments_model_1.default.findByIdAndDelete(commentID);

@@ -8,12 +8,17 @@ import {
   uplodaProperyPhotos,
 } from "../controllers/property_controller";
 import { requireAuth, restrictTo } from "../middlewares/auth_middleware";
+import reviewRouter from "../routes/review_routes";
+import commentRouter from "../routes/comment_routes";
 
 const router = Router();
 
-router.use(requireAuth);
+// router.route("/:propertyID/reviews").post(createReview);
 
-// router.get("/:propertyID/reviews", getPropertyReviews);
+router.use("/:propertyID/reviews", reviewRouter);
+router.use("/:propertyID/comments", commentRouter);
+
+router.use(requireAuth);
 
 router
   .route("/")

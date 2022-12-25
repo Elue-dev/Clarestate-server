@@ -38,6 +38,7 @@ const propertySchema = new mongoose_1.default.Schema({
         default: 4.5,
         min: [1, "A property must have a rating of at least 1"],
         max: [5, "A property cannot have a rating of more than 5"],
+        set: (val) => Math.round(val * 10) / 10,
     },
     ratingsQuantity: {
         type: Number,
@@ -105,7 +106,7 @@ propertySchema.pre("save", function (next) {
 propertySchema.pre(/^find/, function (next) {
     this.populate({
         path: "addedBy",
-        select: "username photo",
+        select: "first_name last_name photo",
     });
     next();
 });

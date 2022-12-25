@@ -3,16 +3,16 @@ import {
   createComment,
   deleteComment,
   getSingleComment,
-  gettAllComments,
+  getAllComments,
   updateComment,
 } from "../controllers/comments_controller";
 import { requireAuth, restrictTo } from "../middlewares/auth_middleware";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use(requireAuth);
 
-router.route("/").get(restrictTo("admin"), gettAllComments).post(createComment);
+router.route("/").get(restrictTo("admin"), getAllComments).post(createComment);
 
 router
   .route("/:commentID")

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const reviews_controller_1 = require("../controllers/reviews_controller");
 const auth_middleware_1 = require("../middlewares/auth_middleware");
-const router = (0, express_1.Router)();
+const router = (0, express_1.Router)({ mergeParams: true });
 router.use(auth_middleware_1.requireAuth);
 router.route("/").get((0, auth_middleware_1.restrictTo)("admin"), reviews_controller_1.getAllReviews).post(reviews_controller_1.createReview);
 router

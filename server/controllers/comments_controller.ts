@@ -7,10 +7,12 @@ export const createComment = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { comment, user, property } = req.body;
 
-    if (!comment || !user || !property) {
-      return next(
-        new GlobalError("comment, user and property are all required", 400)
-      );
+    if (!property) req.body.property = req.params.propertyID;
+    //@ts-ignore
+    if (!user) req.body.user = req.user._id;
+
+    if (!comment) {
+      return next(new GlobalError("Please add your comment", 400));
     }
 
     const newComment = await Comment.create(req.body);
@@ -23,12 +25,17 @@ export const createComment = handleAsync(
   }
 );
 
-export const gettAllComments = handleAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const comments = await Comment.find().sort("-createdAt");
+export const getAllComments = handleAsync(
+  async (req: Request, res: Response) => {
+    let filter = {};
+    //@ts-ignore
+    if (req.params.propertyID) filter = { property: req.params.propertyID };
+
+    const comments = await Comment.find(filter).sort("-createdAt");
 
     res.status(200).json({
       status: "success",
+      results: comments.length,
       comments,
     });
   }
@@ -63,7 +70,7 @@ export const updateComment = handleAsync(
 
     if (
       //@ts-ignore
-      req.user._id.toString() !== comment.user.toString()
+      req.user._id.toString() !== comment.user._id.toString()
     ) {
       return next(
         new GlobalError("You can only update comments you added", 401)
@@ -95,7 +102,7 @@ export const deleteComment = handleAsync(
 
     if (
       //@ts-ignore
-      req.user._id.toString() !== comment.user.toString()
+      req.user._id.toString() !== comment.user._id.toString()
     ) {
       return next(
         new GlobalError("You can only delete comments you added", 401)

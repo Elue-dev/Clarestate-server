@@ -33,7 +33,7 @@ export const createAndSendToken = (
   res.status(statusCode).json({
     status: "success",
     token,
-    data: user,
+    user,
   });
 };
 

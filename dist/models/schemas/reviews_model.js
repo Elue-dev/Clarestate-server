@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
+const property_model_1 = __importDefault(require("./property_model"));
 const reviewSchema = new mongoose_1.default.Schema({
     review: {
         type: String,
@@ -44,13 +45,12 @@ reviewSchema.index({ property: 1, user: 1 }, { unique: true });
 reviewSchema.pre(/^find/, function (next) {
     this.populate({
         path: "user",
-        select: "username photo",
+        select: "first_name last_name photo",
     });
     next();
 });
 reviewSchema.statics.calcAverageRatings = function (propertyID) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(propertyID);
         const ratingStats = yield this.aggregate([
             {
                 $match: { property: propertyID },
@@ -58,18 +58,20 @@ reviewSchema.statics.calcAverageRatings = function (propertyID) {
             {
                 $group: {
                     _id: "$property",
-                    numRatings: { $sum: 1 },
+                    nRating: { $sum: 1 },
                     avgRating: { $avg: "$rating" },
                 },
             },
         ]);
-        console.log(ratingStats);
+        yield property_model_1.default.findByIdAndUpdate(propertyID, {
+            ratingsQuantity: ratingStats[0].nRating,
+            ratingsAverage: ratingStats[0].avgRating,
+        });
     });
 };
-reviewSchema.pre("save", function (next) {
+reviewSchema.post("save", function () {
     //@ts-ignore
     this.constructor.calcAverageRatings(this.property);
-    next();
 });
 const Review = mongoose_1.default.model("review", reviewSchema);
 exports.default = Review;
