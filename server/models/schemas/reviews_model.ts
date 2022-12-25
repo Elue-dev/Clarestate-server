@@ -42,6 +42,30 @@ reviewSchema.pre(/^find/, function (next) {
   next();
 });
 
+reviewSchema.statics.calcAverageRatings = async function (propertyID) {
+  const stats = await this.aggregate([
+    {
+      $match: { property: propertyID },
+    },
+    {
+      $group: {
+        _id: "$property",
+        numRatings: { $sum: 1 },
+        avgRating: { $avg: "$rating" },
+      },
+    },
+  ]);
+
+  console.log(stats);
+};
+
+reviewSchema.pre("save", function (next) {
+  //@ts-ignore
+  this.constructor.calcAverageRatings(this.tour);
+
+  next();
+});
+
 const Review = mongoose.model("review", reviewSchema);
 
 export default Review;

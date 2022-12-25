@@ -17,6 +17,7 @@ export const createComment = handleAsync(
 
     res.status(201).json({
       status: "success",
+      message: "Comment successfully added",
       comment: newComment,
     });
   }

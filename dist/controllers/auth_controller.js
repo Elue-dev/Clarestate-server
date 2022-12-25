@@ -28,8 +28,8 @@ const reset_success_1 = require("../views/reset_success");
 const ua_parser_js_1 = __importDefault(require("ua-parser-js"));
 const update_success_1 = require("../views/update_success");
 exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, email, password } = req.body;
-    if (!username || !email || !password) {
+    const { first_name, last_name, email, password } = req.body;
+    if (!first_name || !last_name || !email || !password) {
         return next(new global_error_1.GlobalError("Please fill in all required fields", 400));
     }
     if (!(0, auth_service_1.validateEmail)(email)) {
@@ -43,7 +43,8 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
     const verificationCode = code.toString();
     const encryptedCode = cryptr_1.cryptr.encrypt(verificationCode);
     const user = yield user_model_1.default.create({
-        username,
+        first_name,
+        last_name,
         email,
         password,
         verificationCode: encryptedCode,
@@ -55,7 +56,7 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
     const reply_to = process.env.REPLY_TO;
     const url = `https://test.com/${user._id}`;
     const body = (0, verification_email_1.verificationEmail)({
-        username: user.username,
+        username: user.first_name,
         verificationCode,
         url,
     });
@@ -94,11 +95,11 @@ exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(v
     user.isVerified = true;
     user.codeExpires = undefined;
     yield user.save();
-    const subject = `Welcome Onboard, ${user.username}!`;
+    const subject = `Welcome Onboard, ${user.first_name}!`;
     const send_to = user.email;
     const sent_from = process.env.EMAIL_USER;
     const reply_to = process.env.REPLY_TO;
-    const body = (0, verification_success_1.verificationSuccess)(user.username);
+    const body = (0, verification_success_1.verificationSuccess)(user.last_name);
     try {
         (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
     }
@@ -111,14 +112,16 @@ exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(v
     (0, auth_service_1.createAndSendToken)(user, 201, res);
 }));
 exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.body;
-    if (!email || !password) {
-        return next(new global_error_1.GlobalError("Both email and password are required", 400));
+    const { email, password, phone } = req.body;
+    if (!email || !password || !phone) {
+        return next(new global_error_1.GlobalError(" phone or email and password are required", 400));
     }
-    const user = yield user_model_1.default.findOne({ email }).select("+password");
+    const user = yield user_model_1.default.findOne({
+        $or: [{ email }, { phone }],
+    }).select("+password");
     //@ts-ignore
     if (!user || !(yield user.correctPassword(password, user.password))) {
-        return next(new global_error_1.GlobalError("Invalid email or password", 400));
+        return next(new global_error_1.GlobalError("Invalid credentials provided", 400));
     }
     const userAgent = (0, ua_parser_js_1.default)(req.headers["user-agent"]);
     if (!user.userAgents.includes(userAgent.ua)) {
@@ -165,7 +168,7 @@ exports.forgotPassword = (0, handle_async_1.default)((req, res, next) => __await
     const reply_to = process.env.REPLY_TO;
     const body = (0, reset_email_1.passwordResetEmail)({
         email,
-        username: existingUser.username,
+        username: existingUser.first_name,
         token: resetToken,
         url: resetUrl,
     });
@@ -209,13 +212,13 @@ exports.resetPassword = (0, handle_async_1.default)((req, res, next) => __awaite
     const userAgent = (0, ua_parser_js_1.default)(req.headers["user-agent"]);
     const browser = userAgent.browser.name || "Not detected";
     const OS = `${userAgent.os.name || "Not detected"}(${userAgent.os.version || "Not detected"})`;
-    const subject = `${user === null || user === void 0 ? void 0 : user.username}, Your password was successfully reset`;
+    const subject = `${user === null || user === void 0 ? void 0 : user.first_name}, Your password was successfully reset`;
     const send_to = user === null || user === void 0 ? void 0 : user.email;
     const sent_from = process.env.EMAIL_USER;
     const reply_to = process.env.REPLY_TO;
     const body = (0, reset_success_1.resetSuccess)({
         //@ts-ignore
-        username: user === null || user === void 0 ? void 0 : user.username,
+        username: user === null || user === void 0 ? void 0 : user.last_name,
         //@ts-ignore
         browser,
         OS,
@@ -258,13 +261,13 @@ exports.updatePassword = (0, handle_async_1.default)((req, res, next) => __await
     const userAgent = (0, ua_parser_js_1.default)(req.headers["user-agent"]);
     const browser = userAgent.browser.name || "Not detected";
     const OS = `${userAgent.os.name || "Not detected"} (${userAgent.os.version || "Not detected"})`;
-    const subject = `${user === null || user === void 0 ? void 0 : user.username}, Your password was successfully changed`;
+    const subject = `${user === null || user === void 0 ? void 0 : user.first_name}, Your password was successfully changed`;
     const send_to = user === null || user === void 0 ? void 0 : user.email;
     const sent_from = process.env.EMAIL_USER;
     const reply_to = process.env.REPLY_TO;
     const body = (0, update_success_1.updateSuccess)({
         //@ts-ignore
-        username: user === null || user === void 0 ? void 0 : user.username,
+        username: user === null || user === void 0 ? void 0 : user.last_name,
         //@ts-ignore
         browser,
         OS,

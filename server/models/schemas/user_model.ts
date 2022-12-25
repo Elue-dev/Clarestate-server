@@ -3,9 +3,13 @@ import { genSalt, hash, compare } from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
-    username: {
+    first_name: {
       type: String,
-      required: [true, "Username is required"],
+      required: [true, "First name is required"],
+    },
+    last_name: {
+      type: String,
+      required: [true, "last name is required"],
     },
     email: {
       type: String,

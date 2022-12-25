@@ -15,9 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcryptjs_1 = require("bcryptjs");
 const userSchema = new mongoose_1.default.Schema({
-    username: {
+    first_name: {
         type: String,
-        required: [true, "Username is required"],
+        required: [true, "First name is required"],
+    },
+    last_name: {
+        type: String,
+        required: [true, "last name is required"],
     },
     email: {
         type: String,

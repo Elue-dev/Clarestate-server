@@ -108,7 +108,7 @@ exports.deleteLoggedInUser = (0, handle_async_1.default)((req, res, next) => __a
     const send_to = user.email;
     const sent_from = process.env.EMAIL_USER;
     const reply_to = process.env.REPLY_TO;
-    const body = (0, delete_account_1.deleteAccount)(user.username);
+    const body = (0, delete_account_1.deleteAccount)(user.first_name);
     try {
         (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
         res.status(200).json({

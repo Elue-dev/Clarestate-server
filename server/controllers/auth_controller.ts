@@ -16,9 +16,9 @@ import { updateSuccess } from "../views/update_success";
 
 export const signup = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { username, email, password } = req.body;
+    const { first_name, last_name, email, password } = req.body;
 
-    if (!username || !email || !password) {
+    if (!first_name || !last_name || !email || !password) {
       return next(new GlobalError("Please fill in all required fields", 400));
     }
 
@@ -38,7 +38,8 @@ export const signup = handleAsync(
     const encryptedCode = cryptr.encrypt(verificationCode);
 
     const user = await User.create({
-      username,
+      first_name,
+      last_name,
       email,
       password,
       verificationCode: encryptedCode,
@@ -51,7 +52,7 @@ export const signup = handleAsync(
     const reply_to = process.env.REPLY_TO as string;
     const url = `https://test.com/${user._id}`;
     const body = verificationEmail({
-      username: user.username,
+      username: user.first_name,
       verificationCode,
       url,
     });
@@ -105,11 +106,11 @@ export const verifyCode = handleAsync(
 
     await user.save();
 
-    const subject = `Welcome Onboard, ${user.username}!`;
+    const subject = `Welcome Onboard, ${user.first_name}!`;
     const send_to = user.email;
     const sent_from = process.env.EMAIL_USER as string;
     const reply_to = process.env.REPLY_TO as string;
-    const body = verificationSuccess(user.username);
+    const body = verificationSuccess(user.last_name);
 
     try {
       sendEmail({ subject, body, send_to, sent_from, reply_to });
@@ -126,17 +127,21 @@ export const verifyCode = handleAsync(
 
 export const login = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { email, password } = req.body;
+    const { email, password, phone } = req.body;
 
-    if (!email || !password) {
-      return next(new GlobalError("Both email and password are required", 400));
+    if (!email || !password || !phone) {
+      return next(
+        new GlobalError(" phone or email and password are required", 400)
+      );
     }
 
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({
+      $or: [{ email }, { phone }],
+    }).select("+password");
 
     //@ts-ignore
     if (!user || !(await user.correctPassword(password, user.password))) {
-      return next(new GlobalError("Invalid email or password", 400));
+      return next(new GlobalError("Invalid credentials provided", 400));
     }
 
     const userAgent = parser(req.headers["user-agent"]);
@@ -202,7 +207,7 @@ export const forgotPassword = handleAsync(
     const reply_to = process.env.REPLY_TO as string;
     const body = passwordResetEmail({
       email,
-      username: existingUser.username,
+      username: existingUser.first_name,
       token: resetToken,
       url: resetUrl,
     });
@@ -266,13 +271,13 @@ export const resetPassword = handleAsync(
       userAgent.os.version || "Not detected"
     })`;
 
-    const subject = `${user?.username}, Your password was successfully reset`;
+    const subject = `${user?.first_name}, Your password was successfully reset`;
     const send_to = user?.email;
     const sent_from = process.env.EMAIL_USER as string;
     const reply_to = process.env.REPLY_TO as string;
     const body = resetSuccess({
       //@ts-ignore
-      username: user?.username,
+      username: user?.last_name,
       //@ts-ignore
       browser,
       OS,
@@ -337,13 +342,13 @@ export const updatePassword = handleAsync(
       userAgent.os.version || "Not detected"
     })`;
 
-    const subject = `${user?.username}, Your password was successfully changed`;
+    const subject = `${user?.first_name}, Your password was successfully changed`;
     const send_to = user?.email;
     const sent_from = process.env.EMAIL_USER as string;
     const reply_to = process.env.REPLY_TO as string;
     const body = updateSuccess({
       //@ts-ignore
-      username: user?.username,
+      username: user?.last_name,
       //@ts-ignore
       browser,
       OS,

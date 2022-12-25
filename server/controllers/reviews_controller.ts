@@ -15,6 +15,7 @@ export const createReview = handleAsync(
 
     res.status(201).json({
       status: "success",
+      message: "Review successfully added",
       review: newReview,
     });
   }

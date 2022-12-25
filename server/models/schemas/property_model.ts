@@ -87,6 +87,8 @@ const propertySchema = new mongoose.Schema(
   }
 );
 
+propertySchema.index({ price: 1, ratingsAverage: -1 });
+
 propertySchema.index({ slug: 1 });
 
 propertySchema.virtual("reviews", {

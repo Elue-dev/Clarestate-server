@@ -24,6 +24,7 @@ exports.createReview = (0, handle_async_1.default)((req, res, next) => __awaiter
     const newReview = yield reviews_model_1.default.create(req.body);
     res.status(201).json({
         status: "success",
+        message: "Review successfully added",
         review: newReview,
     });
 }));

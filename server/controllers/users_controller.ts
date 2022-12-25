@@ -157,7 +157,7 @@ export const deleteLoggedInUser = handleAsync(
     const send_to = user.email;
     const sent_from = process.env.EMAIL_USER as string;
     const reply_to = process.env.REPLY_TO as string;
-    const body = deleteAccount(user.username);
+    const body = deleteAccount(user.first_name);
 
     try {
       sendEmail({ subject, body, send_to, sent_from, reply_to });

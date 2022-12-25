@@ -24,6 +24,7 @@ exports.createComment = (0, handle_async_1.default)((req, res, next) => __awaite
     const newComment = yield comments_model_1.default.create(req.body);
     res.status(201).json({
         status: "success",
+        message: "Comment successfully added",
         comment: newComment,
     });
 }));
