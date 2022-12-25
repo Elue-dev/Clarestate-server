@@ -5,6 +5,7 @@ import cloudinary from "cloudinary";
 import { fileSizeFormatter, upload } from "../utils/file_upload";
 import { GlobalError } from "../utils/global_error";
 import { APIFeatures } from "../services/api_features";
+import Review from "../models/schemas/reviews_model";
 
 const cloud = cloudinary.v2;
 
@@ -126,6 +127,19 @@ export const deleteProperty = handleAsync(
     }
 
     await Property.findByIdAndDelete(propertyID);
+
+    res.status(200).json({
+      status: "success",
+      message: "Property deleted successfully",
+    });
+  }
+);
+
+export const getPropertyReviews = handleAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { propertyID } = req.params;
+
+    const review = Review.findById(propertyID);
 
     res.status(200).json({
       status: "success",

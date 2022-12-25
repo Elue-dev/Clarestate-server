@@ -12,16 +12,18 @@ import { requireAuth, restrictTo } from "../middlewares/auth_middleware";
 
 const router = Router();
 
-router.patch("/update-me", requireAuth, updateLoggedInUser);
-router.get("/get-me", requireAuth, getLoggedInUser);
-router.delete("/delete-me", requireAuth, deleteLoggedInUser);
+router.use(requireAuth);
 
-router.route("/").get(requireAuth, restrictTo("admin"), getAllUsers);
+router.patch("/update-me", updateLoggedInUser);
+router.get("/get-me", getLoggedInUser);
+router.delete("/delete-me", deleteLoggedInUser);
+
+router.route("/").get(restrictTo("admin"), getAllUsers);
 
 router
   .route("/:userID")
-  .get(requireAuth, getSingleUser)
-  .patch(requireAuth, restrictTo("admin"), updateUser)
-  .delete(requireAuth, restrictTo("admin"), deleteUser);
+  .get(getSingleUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 export default router;

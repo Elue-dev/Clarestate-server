@@ -43,7 +43,9 @@ reviewSchema.pre(/^find/, function (next) {
 });
 
 reviewSchema.statics.calcAverageRatings = async function (propertyID) {
-  const stats = await this.aggregate([
+  console.log(propertyID);
+
+  const ratingStats = await this.aggregate([
     {
       $match: { property: propertyID },
     },
@@ -56,12 +58,12 @@ reviewSchema.statics.calcAverageRatings = async function (propertyID) {
     },
   ]);
 
-  console.log(stats);
+  console.log(ratingStats);
 };
 
 reviewSchema.pre("save", function (next) {
   //@ts-ignore
-  this.constructor.calcAverageRatings(this.tour);
+  this.constructor.calcAverageRatings(this.property);
 
   next();
 });

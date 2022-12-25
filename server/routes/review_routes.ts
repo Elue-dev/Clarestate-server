@@ -10,15 +10,14 @@ import { requireAuth, restrictTo } from "../middlewares/auth_middleware";
 
 const router = Router();
 
-router
-  .route("/")
-  .get(requireAuth, restrictTo("admin"), getAllReviews)
-  .post(requireAuth, createReview);
+router.use(requireAuth);
+
+router.route("/").get(restrictTo("admin"), getAllReviews).post(createReview);
 
 router
   .route("/:reviewID")
-  .get(requireAuth, getSingleReview)
-  .patch(requireAuth, updateReview)
-  .delete(requireAuth, deleteReview);
+  .get(getSingleReview)
+  .patch(updateReview)
+  .delete(deleteReview);
 
 export default router;

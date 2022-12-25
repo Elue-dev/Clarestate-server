@@ -42,6 +42,7 @@ export const signup = handleAsync(
       last_name,
       email,
       password,
+      active: false,
       verificationCode: encryptedCode,
       codeExpires: Date.now() + 60 * (60 * 1000),
     });
@@ -102,6 +103,7 @@ export const verifyCode = handleAsync(
 
     user.verificationCode = undefined;
     user.isVerified = true;
+    user.active = true;
     user.codeExpires = undefined;
 
     await user.save();
@@ -129,9 +131,9 @@ export const login = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password, phone } = req.body;
 
-    if (!email || !password || !phone) {
+    if ((!email && !phone) || !password) {
       return next(
-        new GlobalError(" phone or email and password are required", 400)
+        new GlobalError("phone number or email and password are required", 400)
       );
     }
 

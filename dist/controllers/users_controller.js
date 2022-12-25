@@ -48,6 +48,16 @@ exports.updateUser = (0, handle_async_1.default)((req, res, next) => __awaiter(v
     if (isVerified) {
         return next(new global_error_1.GlobalError("You are not allowed to change user verification status", 401));
     }
+    if (
+    //@ts-ignore
+    req.user._id.toString() !== userID ||
+        //@ts-ignore
+        req.user.role !== "admin") {
+        return next(new global_error_1.GlobalError("You can only update your own account", 401));
+    }
+    if (req.body.password) {
+        return next(new global_error_1.GlobalError("This route is not for password updates. Please use the forgot password route", 400));
+    }
     const updatedUser = yield user_model_1.default.findByIdAndUpdate(userID, req.body, {
         new: true,
         runValidators: true,
@@ -131,6 +141,13 @@ exports.deleteUser = (0, handle_async_1.default)((req, res, next) => __awaiter(v
     }
     if (!user.active) {
         return next(new global_error_1.GlobalError("User already deleted", 404));
+    }
+    if (
+    //@ts-ignore
+    req.user._id.toString() !== userID ||
+        //@ts-ignore
+        req.user.role !== "admin") {
+        return next(new global_error_1.GlobalError("You can only delete your own account", 401));
     }
     user.active = false;
     yield user.save();

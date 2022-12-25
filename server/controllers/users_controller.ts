@@ -56,6 +56,24 @@ export const updateUser = handleAsync(
       );
     }
 
+    if (
+      //@ts-ignore
+      req.user._id.toString() !== userID ||
+      //@ts-ignore
+      req.user.role !== "admin"
+    ) {
+      return next(new GlobalError("You can only update your own account", 401));
+    }
+
+    if (req.body.password) {
+      return next(
+        new GlobalError(
+          "This route is not for password updates. Please use the forgot password route",
+          400
+        )
+      );
+    }
+
     const updatedUser = await User.findByIdAndUpdate(userID, req.body, {
       new: true,
       runValidators: true,
@@ -186,6 +204,15 @@ export const deleteUser = handleAsync(
 
     if (!user.active) {
       return next(new GlobalError("User already deleted", 404));
+    }
+
+    if (
+      //@ts-ignore
+      req.user._id.toString() !== userID ||
+      //@ts-ignore
+      req.user.role !== "admin"
+    ) {
+      return next(new GlobalError("You can only delete your own account", 401));
     }
 
     user.active = false;

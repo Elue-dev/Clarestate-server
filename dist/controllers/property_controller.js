@@ -12,13 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uplodaProperyPhotos = exports.deleteProperty = exports.updateProperty = exports.getSingleProperty = exports.getAllProperties = exports.createProperty = void 0;
+exports.uplodaProperyPhotos = exports.getPropertyReviews = exports.deleteProperty = exports.updateProperty = exports.getSingleProperty = exports.getAllProperties = exports.createProperty = void 0;
 const property_model_1 = __importDefault(require("../models/schemas/property_model"));
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const cloudinary_1 = __importDefault(require("cloudinary"));
 const file_upload_1 = require("../utils/file_upload");
 const global_error_1 = require("../utils/global_error");
 const api_features_1 = require("../services/api_features");
+const reviews_model_1 = __importDefault(require("../models/schemas/reviews_model"));
 const cloud = cloudinary_1.default.v2;
 exports.createProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     cloud.config({
@@ -103,6 +104,14 @@ exports.deleteProperty = (0, handle_async_1.default)((req, res, next) => __await
         return next(new global_error_1.GlobalError("You can only delete properties you added", 401));
     }
     yield property_model_1.default.findByIdAndDelete(propertyID);
+    res.status(200).json({
+        status: "success",
+        message: "Property deleted successfully",
+    });
+}));
+exports.getPropertyReviews = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { propertyID } = req.params;
+    const review = reviews_model_1.default.findById(propertyID);
     res.status(200).json({
         status: "success",
         message: "Property deleted successfully",

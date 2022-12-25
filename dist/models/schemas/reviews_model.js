@@ -50,7 +50,8 @@ reviewSchema.pre(/^find/, function (next) {
 });
 reviewSchema.statics.calcAverageRatings = function (propertyID) {
     return __awaiter(this, void 0, void 0, function* () {
-        const stats = yield this.aggregate([
+        console.log(propertyID);
+        const ratingStats = yield this.aggregate([
             {
                 $match: { property: propertyID },
             },
@@ -62,12 +63,12 @@ reviewSchema.statics.calcAverageRatings = function (propertyID) {
                 },
             },
         ]);
-        console.log(stats);
+        console.log(ratingStats);
     });
 };
 reviewSchema.pre("save", function (next) {
     //@ts-ignore
-    this.constructor.calcAverageRatings(this.tour);
+    this.constructor.calcAverageRatings(this.property);
     next();
 });
 const Review = mongoose_1.default.model("review", reviewSchema);

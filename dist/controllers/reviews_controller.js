@@ -21,6 +21,10 @@ exports.createReview = (0, handle_async_1.default)((req, res, next) => __awaiter
     if (!review || !rating || !user || !property) {
         return next(new global_error_1.GlobalError("Please provide all required fields", 400));
     }
+    //@ts-ignore
+    if (req.user.role === "admin") {
+        return next(new global_error_1.GlobalError("Admins are not allowed to add reviews to a property", 401));
+    }
     const newReview = yield reviews_model_1.default.create(req.body);
     res.status(201).json({
         status: "success",

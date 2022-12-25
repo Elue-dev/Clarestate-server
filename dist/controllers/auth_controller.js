@@ -47,6 +47,7 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
         last_name,
         email,
         password,
+        active: false,
         verificationCode: encryptedCode,
         codeExpires: Date.now() + 60 * (60 * 1000),
     });
@@ -93,6 +94,7 @@ exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(v
     }
     user.verificationCode = undefined;
     user.isVerified = true;
+    user.active = true;
     user.codeExpires = undefined;
     yield user.save();
     const subject = `Welcome Onboard, ${user.first_name}!`;
@@ -113,8 +115,8 @@ exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(v
 }));
 exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password, phone } = req.body;
-    if (!email || !password || !phone) {
-        return next(new global_error_1.GlobalError(" phone or email and password are required", 400));
+    if ((!email && !phone) || !password) {
+        return next(new global_error_1.GlobalError("phone number or email and password are required", 400));
     }
     const user = yield user_model_1.default.findOne({
         $or: [{ email }, { phone }],

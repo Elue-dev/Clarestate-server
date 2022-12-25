@@ -11,16 +11,20 @@ import { requireAuth, restrictTo } from "../middlewares/auth_middleware";
 
 const router = Router();
 
+router.use(requireAuth);
+
+// router.get("/:propertyID/reviews", getPropertyReviews);
+
 router
   .route("/")
-  .get(requireAuth, restrictTo("admin"), getAllProperties)
-  .post(requireAuth, uplodaProperyPhotos, createProperty);
+  .get(getAllProperties)
+  .post(uplodaProperyPhotos, createProperty);
 
-router.get("/:slug", requireAuth, getSingleProperty);
+router.get("/:slug", getSingleProperty);
 
 router
   .route("/:propertyID")
-  .patch(requireAuth, restrictTo("admin"), updateProperty)
-  .delete(requireAuth, deleteProperty);
+  .patch(restrictTo("admin"), updateProperty)
+  .delete(deleteProperty);
 
 export default router;
