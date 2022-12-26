@@ -8,13 +8,24 @@ import { deleteAccount } from "../views/delete_account";
 
 export const getAllUsers = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    //@ts-ignore
+    const cachedUsers = await redisClient.get("clarUsers");
+
+    if (cachedUsers) {
+      return res.status(200).json({
+        status: "success",
+        user: JSON.parse(cachedUsers),
+      });
+    }
+
     const users = await User.find({ active: { $ne: false } })
       .sort("-createdAt")
       .select("+active");
 
+    await redisClient.set("clarUsers", JSON.stringify(users));
+
     res.status(200).json({
       status: "success",
-      results: users.length,
       users,
     });
   }

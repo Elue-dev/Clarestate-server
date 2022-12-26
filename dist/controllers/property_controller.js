@@ -50,7 +50,7 @@ exports.getAllProperties = (0, handle_async_1.default)((req, res) => __awaiter(v
     const cachedProperties = yield app_1.redisClient.get("clarProp");
     if (cachedProperties) {
         return res.status(200).json({
-            status: "success from redis",
+            status: "success",
             // results: cachedProperties.length,
             properties: JSON.parse(cachedProperties),
         });

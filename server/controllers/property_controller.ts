@@ -49,7 +49,7 @@ export const getAllProperties = handleAsync(
 
     if (cachedProperties) {
       return res.status(200).json({
-        status: "success from redis",
+        status: "success",
         // results: cachedProperties.length,
         properties: JSON.parse(cachedProperties),
       });

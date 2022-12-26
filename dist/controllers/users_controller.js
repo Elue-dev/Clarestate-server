@@ -20,12 +20,20 @@ const global_error_1 = require("../utils/global_error");
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const delete_account_1 = require("../views/delete_account");
 exports.getAllUsers = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    //@ts-ignore
+    const cachedUsers = yield app_1.redisClient.get("clarUsers");
+    if (cachedUsers) {
+        return res.status(200).json({
+            status: "success",
+            user: JSON.parse(cachedUsers),
+        });
+    }
     const users = yield user_model_1.default.find({ active: { $ne: false } })
         .sort("-createdAt")
         .select("+active");
+    yield app_1.redisClient.set("clarUsers", JSON.stringify(users));
     res.status(200).json({
         status: "success",
-        results: users.length,
         users,
     });
 }));
