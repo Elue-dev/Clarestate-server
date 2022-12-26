@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { redisClient } from "../app";
 import User from "../models/schemas/user_model";
 import sendEmail from "../services/email_service";
 import { GlobalError } from "../utils/global_error";
@@ -23,10 +24,22 @@ export const getSingleUser = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userID } = req.params;
 
+    //@ts-ignore
+    const cachedUser = await redisClient.get(userID);
+
+    if (cachedUser) {
+      return res.status(200).json({
+        status: "success",
+        user: JSON.parse(cachedUser),
+      });
+    }
+
     const user = await User.findOne({
       _id: userID,
       active: { $ne: false },
     });
+
+    await redisClient.set(userID, JSON.stringify(user));
 
     if (!user) {
       return next(new GlobalError("No user found", 404));
@@ -34,7 +47,7 @@ export const getSingleUser = handleAsync(
 
     res.status(200).json({
       status: "success",
-      data: user,
+      user,
     });
   }
 );

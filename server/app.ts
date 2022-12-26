@@ -19,6 +19,16 @@ import path from "path";
 
 const app = express();
 
+import * as redis from "redis";
+
+const redisURL = "redis://127.0.0.1:6379";
+//@ts-ignore
+const redisClient = redis.createClient(redisURL);
+
+redisClient.connect();
+
+export { redisClient };
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(cors());

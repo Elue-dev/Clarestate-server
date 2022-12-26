@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUser = exports.deleteLoggedInUser = exports.getLoggedInUser = exports.updateUser = exports.getSingleUser = exports.getAllUsers = void 0;
+const app_1 = require("../app");
 const user_model_1 = __importDefault(require("../models/schemas/user_model"));
 const email_service_1 = __importDefault(require("../services/email_service"));
 const global_error_1 = require("../utils/global_error");
@@ -30,16 +31,25 @@ exports.getAllUsers = (0, handle_async_1.default)((req, res, next) => __awaiter(
 }));
 exports.getSingleUser = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { userID } = req.params;
+    //@ts-ignore
+    const cachedUser = yield app_1.redisClient.get(userID);
+    if (cachedUser) {
+        return res.status(200).json({
+            status: "success",
+            user: JSON.parse(cachedUser),
+        });
+    }
     const user = yield user_model_1.default.findOne({
         _id: userID,
         active: { $ne: false },
     });
+    yield app_1.redisClient.set(userID, JSON.stringify(user));
     if (!user) {
         return next(new global_error_1.GlobalError("No user found", 404));
     }
     res.status(200).json({
         status: "success",
-        data: user,
+        user,
     });
 }));
 exports.updateUser = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

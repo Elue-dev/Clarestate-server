@@ -20,6 +20,7 @@ const file_upload_1 = require("../utils/file_upload");
 const global_error_1 = require("../utils/global_error");
 const api_features_1 = require("../services/api_features");
 const reviews_model_1 = __importDefault(require("../models/schemas/reviews_model"));
+const app_1 = require("../app");
 const cloud = cloudinary_1.default.v2;
 exports.createProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     cloud.config({
@@ -60,9 +61,18 @@ exports.getAllProperties = (0, handle_async_1.default)((req, res) => __awaiter(v
 }));
 exports.getSingleProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { slug } = req.params;
+    //@ts-ignore
+    const cachedProperty = yield app_1.redisClient.get(slug);
+    if (cachedProperty) {
+        return res.status(200).json({
+            status: "success",
+            property: JSON.parse(cachedProperty),
+        });
+    }
     const property = yield property_model_1.default.findOne({ slug })
         .populate("reviews")
         .populate("comments");
+    yield app_1.redisClient.set(slug, JSON.stringify(property));
     if (!property) {
         return next(new global_error_1.GlobalError("Property not found", 404));
     }
