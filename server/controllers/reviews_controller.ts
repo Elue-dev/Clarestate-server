@@ -100,6 +100,8 @@ export const updateReview = handleAsync(
       runValidators: true,
     });
 
+    await review.save(); // doing this for static methods in model
+
     res.status(200).json({
       status: "success",
       message: "Review updated successfully",
@@ -127,6 +129,7 @@ export const deleteReview = handleAsync(
       );
     }
 
+    //@ts-ignore
     await Review.findByIdAndDelete(reviewID);
 
     res.status(200).json({

@@ -51,6 +51,7 @@ reviewSchema.pre(/^find/, function (next) {
 });
 reviewSchema.statics.calcAverageRatings = function (propertyID) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log(propertyID);
         const ratingStats = yield this.aggregate([
             {
                 $match: { property: propertyID },
@@ -63,15 +64,41 @@ reviewSchema.statics.calcAverageRatings = function (propertyID) {
                 },
             },
         ]);
-        yield property_model_1.default.findByIdAndUpdate(propertyID, {
-            ratingsQuantity: ratingStats[0].nRating,
-            ratingsAverage: ratingStats[0].avgRating,
-        });
+        console.log(ratingStats);
+        if (ratingStats.length > 0) {
+            yield property_model_1.default.findByIdAndUpdate(propertyID, {
+                ratingsQuantity: ratingStats[0].nRating,
+                ratingsAverage: ratingStats[0].avgRating,
+            });
+        }
+        else {
+            yield property_model_1.default.findByIdAndUpdate(propertyID, {
+                ratingsQuantity: 0,
+                ratingsAverage: 4.5,
+            });
+        }
     });
 };
 reviewSchema.post("save", function () {
-    //@ts-ignore
-    this.constructor.calcAverageRatings(this.property);
+    return __awaiter(this, void 0, void 0, function* () {
+        //@ts-ignore
+        yield this.constructor.calcAverageRatings(this.property);
+    });
+});
+reviewSchema.pre(/^findByIdAnd/, function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        //@ts-ignore
+        this.rev = yield this.findOne();
+        //@ts-ignore
+        console.log(this.rev);
+        next();
+    });
+});
+reviewSchema.post(/^findByIdAnd/, function () {
+    return __awaiter(this, void 0, void 0, function* () {
+        //@ts-ignore
+        yield this.rev.constructor.calcAverageRatings(this.rev.property);
+    });
 });
 const Review = mongoose_1.default.model("review", reviewSchema);
 exports.default = Review;

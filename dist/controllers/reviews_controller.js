@@ -78,6 +78,7 @@ exports.updateReview = (0, handle_async_1.default)((req, res, next) => __awaiter
         new: true,
         runValidators: true,
     });
+    yield review.save(); // doing this for static methods in model
     res.status(200).json({
         status: "success",
         message: "Review updated successfully",
@@ -95,6 +96,7 @@ exports.deleteReview = (0, handle_async_1.default)((req, res, next) => __awaiter
     req.user._id.toString() !== review.user._id.toString()) {
         return next(new global_error_1.GlobalError("You can only delete reviews you added", 401));
     }
+    //@ts-ignore
     yield reviews_model_1.default.findByIdAndDelete(reviewID);
     res.status(200).json({
         status: "success",

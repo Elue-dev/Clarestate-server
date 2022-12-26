@@ -44,6 +44,8 @@ reviewSchema.pre(/^find/, function (next) {
 });
 
 reviewSchema.statics.calcAverageRatings = async function (propertyID) {
+  console.log(propertyID);
+
   const ratingStats = await this.aggregate([
     {
       $match: { property: propertyID },
@@ -57,15 +59,38 @@ reviewSchema.statics.calcAverageRatings = async function (propertyID) {
     },
   ]);
 
-  await Property.findByIdAndUpdate(propertyID, {
-    ratingsQuantity: ratingStats[0].nRating,
-    ratingsAverage: ratingStats[0].avgRating,
-  });
+  console.log(ratingStats);
+
+  if (ratingStats.length > 0) {
+    await Property.findByIdAndUpdate(propertyID, {
+      ratingsQuantity: ratingStats[0].nRating,
+      ratingsAverage: ratingStats[0].avgRating,
+    });
+  } else {
+    await Property.findByIdAndUpdate(propertyID, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
 };
 
-reviewSchema.post("save", function () {
+reviewSchema.post("save", async function () {
   //@ts-ignore
-  this.constructor.calcAverageRatings(this.property);
+  await this.constructor.calcAverageRatings(this.property);
+});
+
+reviewSchema.pre(/^findByIdAnd/, async function (next) {
+  //@ts-ignore
+  this.rev = await this.findOne();
+  //@ts-ignore
+  console.log(this.rev);
+
+  next();
+});
+
+reviewSchema.post(/^findByIdAnd/, async function () {
+  //@ts-ignore
+  await this.rev.constructor.calcAverageRatings(this.rev.property);
 });
 
 const Review = mongoose.model("review", reviewSchema);
