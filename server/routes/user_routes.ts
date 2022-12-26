@@ -6,6 +6,7 @@ import {
   deleteUser,
   getLoggedInUser,
   deleteLoggedInUser,
+  getUserProperties,
 } from "../controllers/users_controller";
 import { requireAuth, restrictTo } from "../middlewares/auth_middleware";
 
@@ -15,6 +16,7 @@ router.use(requireAuth);
 
 router.get("/get-me", getLoggedInUser);
 router.delete("/delete-me", deleteLoggedInUser);
+router.get("/my-properties", getUserProperties);
 
 router.route("/").get(restrictTo("admin"), getAllUsers);
 

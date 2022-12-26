@@ -9,7 +9,6 @@ const auth_middleware_1 = require("../middlewares/auth_middleware");
 const review_routes_1 = __importDefault(require("../routes/review_routes"));
 const comment_routes_1 = __importDefault(require("../routes/comment_routes"));
 const router = (0, express_1.Router)();
-// router.route("/:propertyID/reviews").post(createReview);
 router.use("/:propertyID/reviews", review_routes_1.default);
 router.use("/:propertyID/comments", comment_routes_1.default);
 router.use(auth_middleware_1.requireAuth);

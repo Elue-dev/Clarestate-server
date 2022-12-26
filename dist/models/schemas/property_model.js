@@ -103,7 +103,7 @@ propertySchema.pre("save", function (next) {
     this.slug = (0, slugify_1.default)(this.name, { lower: true });
     next();
 });
-propertySchema.pre(/^find/, function (next) {
+propertySchema.pre(/^findOne/, function (next) {
     this.populate({
         path: "addedBy",
         select: "first_name last_name photo",

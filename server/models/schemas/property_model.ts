@@ -109,7 +109,7 @@ propertySchema.pre("save", function (next) {
   next();
 });
 
-propertySchema.pre(/^find/, function (next) {
+propertySchema.pre(/^findOne/, function (next) {
   this.populate({
     path: "addedBy",
     select: "first_name last_name photo",

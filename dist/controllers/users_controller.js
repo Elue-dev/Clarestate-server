@@ -12,39 +12,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.deleteLoggedInUser = exports.getLoggedInUser = exports.updateUser = exports.getSingleUser = exports.getAllUsers = void 0;
-const app_1 = require("../app");
+exports.deleteUser = exports.deleteLoggedInUser = exports.getLoggedInUser = exports.updateUser = exports.getUserProperties = exports.getSingleUser = exports.getAllUsers = void 0;
+// import { redisClient } from "../app";
+const property_model_1 = __importDefault(require("../models/schemas/property_model"));
 const user_model_1 = __importDefault(require("../models/schemas/user_model"));
+// import { PropertyTypes } from "../models/types/property_types";
 const email_service_1 = __importDefault(require("../services/email_service"));
 const global_error_1 = require("../utils/global_error");
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const delete_account_email_1 = require("../views/delete_account_email");
 exports.getAllUsers = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const cachedUsers = yield app_1.redisClient.get("all_users");
-    if (cachedUsers) {
-        return res.status(200).json({
-            status: "success",
-            users: JSON.parse(cachedUsers),
-        });
-    }
     const users = yield user_model_1.default.find({ active: { $ne: false } })
         .sort("-createdAt")
         .select("+active");
-    yield app_1.redisClient.set("all_users", JSON.stringify(users));
     res.status(200).json({
         status: "success",
+        results: users.length,
         users,
     });
 }));
 exports.getSingleUser = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { userID } = req.params;
-    const cachedUser = yield app_1.redisClient.get(`user-${userID}`);
-    if (cachedUser) {
-        return res.status(200).json({
-            status: "success",
-            user: JSON.parse(cachedUser),
-        });
-    }
     const user = yield user_model_1.default.findOne({
         _id: userID,
         active: { $ne: false },
@@ -52,10 +40,20 @@ exports.getSingleUser = (0, handle_async_1.default)((req, res, next) => __awaite
     if (!user) {
         return next(new global_error_1.GlobalError("No user found", 404));
     }
-    yield app_1.redisClient.set(`user-${userID}`, JSON.stringify(user));
     res.status(200).json({
         status: "success",
         user,
+    });
+}));
+exports.getUserProperties = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    //@ts-ignore
+    const properties = yield property_model_1.default.find({ addedBy: req.user._id });
+    if (!properties) {
+        return next(new global_error_1.GlobalError("You have not added any properties yet", 404));
+    }
+    res.status(200).json({
+        status: "success",
+        properties,
     });
 }));
 exports.updateUser = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -85,8 +83,6 @@ exports.updateUser = (0, handle_async_1.default)((req, res, next) => __awaiter(v
         new: true,
         runValidators: true,
     });
-    yield app_1.redisClient.del(`user-${userID}`);
-    yield app_1.redisClient.del("all_users");
     res.status(200).json({
         status: "success",
         updatedUser,
@@ -151,8 +147,6 @@ exports.deleteUser = (0, handle_async_1.default)((req, res, next) => __awaiter(v
     }
     user.active = false;
     yield user.save();
-    yield app_1.redisClient.del(`user-${userID}`);
-    yield app_1.redisClient.del("all_users");
     res.status(200).json({
         status: "success",
         message: "User sucessfully deleted",

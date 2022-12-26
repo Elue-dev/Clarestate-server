@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { redisClient } from "../app";
+// import { redisClient } from "../app";
+import Property from "../models/schemas/property_model";
 import User from "../models/schemas/user_model";
+// import { PropertyTypes } from "../models/types/property_types";
 import sendEmail from "../services/email_service";
 import { GlobalError } from "../utils/global_error";
 import handleAsync from "../utils/handle_async";
@@ -8,23 +10,13 @@ import { deleteAccount } from "../views/delete_account_email";
 
 export const getAllUsers = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const cachedUsers = await redisClient.get("all_users");
-
-    if (cachedUsers) {
-      return res.status(200).json({
-        status: "success",
-        users: JSON.parse(cachedUsers),
-      });
-    }
-
     const users = await User.find({ active: { $ne: false } })
       .sort("-createdAt")
       .select("+active");
 
-    await redisClient.set("all_users", JSON.stringify(users));
-
     res.status(200).json({
       status: "success",
+      results: users.length,
       users,
     });
   }
@@ -33,14 +25,6 @@ export const getAllUsers = handleAsync(
 export const getSingleUser = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userID } = req.params;
-    const cachedUser = await redisClient.get(`user-${userID}`);
-
-    if (cachedUser) {
-      return res.status(200).json({
-        status: "success",
-        user: JSON.parse(cachedUser),
-      });
-    }
 
     const user = await User.findOne({
       _id: userID,
@@ -51,11 +35,27 @@ export const getSingleUser = handleAsync(
       return next(new GlobalError("No user found", 404));
     }
 
-    await redisClient.set(`user-${userID}`, JSON.stringify(user));
-
     res.status(200).json({
       status: "success",
       user,
+    });
+  }
+);
+
+export const getUserProperties = handleAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    //@ts-ignore
+    const properties = await Property.find({ addedBy: req.user._id });
+
+    if (!properties) {
+      return next(
+        new GlobalError("You have not added any properties yet", 404)
+      );
+    }
+
+    res.status(200).json({
+      status: "success",
+      properties,
     });
   }
 );
@@ -105,9 +105,6 @@ export const updateUser = handleAsync(
       new: true,
       runValidators: true,
     });
-
-    await redisClient.del(`user-${userID}`);
-    await redisClient.del("all_users");
 
     res.status(200).json({
       status: "success",
@@ -195,10 +192,6 @@ export const deleteUser = handleAsync(
     user.active = false;
 
     await user.save();
-
-    await redisClient.del(`user-${userID}`);
-    await redisClient.del("all_users");
-
     res.status(200).json({
       status: "success",
       message: "User sucessfully deleted",

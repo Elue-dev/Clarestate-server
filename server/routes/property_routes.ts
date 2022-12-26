@@ -13,8 +13,6 @@ import commentRouter from "../routes/comment_routes";
 
 const router = Router();
 
-// router.route("/:propertyID/reviews").post(createReview);
-
 router.use("/:propertyID/reviews", reviewRouter);
 router.use("/:propertyID/comments", commentRouter);
 
