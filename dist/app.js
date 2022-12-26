@@ -44,9 +44,9 @@ const review_routes_1 = __importDefault(require("./routes/review_routes"));
 const comment_routes_1 = __importDefault(require("./routes/comment_routes"));
 const contact_route_1 = __importDefault(require("./routes/contact_route"));
 const path_1 = __importDefault(require("path"));
-const app = (0, express_1.default)();
 const redis = __importStar(require("redis"));
-const redisURL = "redis://127.0.0.1:6379";
+const app = (0, express_1.default)();
+const redisURL = process.env.REDIS_PORT || 6379;
 //@ts-ignore
 const redisClient = redis.createClient(redisURL);
 exports.redisClient = redisClient;

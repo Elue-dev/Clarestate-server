@@ -16,12 +16,11 @@ import reviewRouter from "./routes/review_routes";
 import commentRouter from "./routes/comment_routes";
 import contactRouter from "./routes/contact_route";
 import path from "path";
+import * as redis from "redis";
 
 const app = express();
 
-import * as redis from "redis";
-
-const redisURL = "redis://127.0.0.1:6379";
+const redisURL = process.env.REDIS_PORT || 6379;
 //@ts-ignore
 const redisClient = redis.createClient(redisURL);
 

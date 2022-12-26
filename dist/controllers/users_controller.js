@@ -24,7 +24,7 @@ exports.getAllUsers = (0, handle_async_1.default)((req, res, next) => __awaiter(
     const cachedUsers = yield app_1.redisClient.get("clarUsers");
     if (cachedUsers) {
         return res.status(200).json({
-            status: "success",
+            status: "success RED",
             user: JSON.parse(cachedUsers),
         });
     }

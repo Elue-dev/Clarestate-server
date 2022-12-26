@@ -13,7 +13,7 @@ export const getAllUsers = handleAsync(
 
     if (cachedUsers) {
       return res.status(200).json({
-        status: "success",
+        status: "success RED",
         user: JSON.parse(cachedUsers),
       });
     }
