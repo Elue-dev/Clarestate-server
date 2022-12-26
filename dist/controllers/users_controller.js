@@ -12,15 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.deleteLoggedInUser = exports.getLoggedInUser = exports.updateUser = exports.getUserProperties = exports.getSingleUser = exports.getAllUsers = void 0;
+exports.deleteUser = exports.getLoggedInUser = exports.updateUser = exports.getUserProperties = exports.getSingleUser = exports.getAllUsers = void 0;
 // import { redisClient } from "../app";
 const property_model_1 = __importDefault(require("../models/schemas/property_model"));
 const user_model_1 = __importDefault(require("../models/schemas/user_model"));
-// import { PropertyTypes } from "../models/types/property_types";
-const email_service_1 = __importDefault(require("../services/email_service"));
 const global_error_1 = require("../utils/global_error");
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
-const delete_account_email_1 = require("../views/delete_account_email");
 exports.getAllUsers = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const users = yield user_model_1.default.find({ active: { $ne: false } })
         .sort("-createdAt")
@@ -98,36 +95,6 @@ exports.getLoggedInUser = (0, handle_async_1.default)((req, res, next) => __awai
         status: "success",
         user,
     });
-}));
-exports.deleteLoggedInUser = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    //@ts-ignore
-    const user = yield user_model_1.default.findById(req.user._id).select("+active");
-    if (!user || !user.active) {
-        return next(new global_error_1.GlobalError("User not found", 404));
-    }
-    if (!user.active) {
-        return next(new global_error_1.GlobalError("User already deleted", 404));
-    }
-    user.active = false;
-    yield user.save();
-    const subject = `Notification on deleted account`;
-    const send_to = user.email;
-    const sent_from = process.env.EMAIL_USER;
-    const reply_to = process.env.REPLY_TO;
-    const body = (0, delete_account_email_1.deleteAccount)(user.first_name);
-    try {
-        (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
-        res.status(200).json({
-            status: "success",
-            message: "User sucessfully deleted",
-        });
-    }
-    catch (error) {
-        res.status(500).json({
-            status: "fail",
-            message: `Email not sent. Please try again.`,
-        });
-    }
 }));
 exports.deleteUser = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { userID } = req.params;

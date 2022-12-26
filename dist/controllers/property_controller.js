@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uplodaProperyPhotos = exports.deleteProperty = exports.updateProperty = exports.getSingleProperty = exports.getAllProperties = exports.createProperty = void 0;
+exports.uploadProperyPhotos = exports.deleteProperty = exports.updateProperty = exports.getSingleProperty = exports.getAllProperties = exports.createProperty = void 0;
 const property_model_1 = __importDefault(require("../models/schemas/property_model"));
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const cloudinary_1 = __importDefault(require("cloudinary"));
@@ -49,7 +49,7 @@ exports.getAllProperties = (0, handle_async_1.default)((req, res) => __awaiter(v
         .filter()
         .sort()
         .limitFields();
-    const properties = features.query;
+    const properties = yield features.query;
     res.status(200).json({
         status: "success",
         results: properties.length,
@@ -106,4 +106,4 @@ exports.deleteProperty = (0, handle_async_1.default)((req, res, next) => __await
         message: "Property deleted successfully",
     });
 }));
-exports.uplodaProperyPhotos = file_upload_1.upload.array("images", 6);
+exports.uploadProperyPhotos = file_upload_1.upload.array("images", 6);

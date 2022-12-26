@@ -51,7 +51,7 @@ export const getAllProperties = handleAsync(
       .sort()
       .limitFields();
 
-    const properties = features.query;
+    const properties = await features.query;
 
     res.status(200).json({
       status: "success",
@@ -135,4 +135,4 @@ export const deleteProperty = handleAsync(
   }
 );
 
-export const uplodaProperyPhotos = upload.array("images", 6);
+export const uploadProperyPhotos = upload.array("images", 6);

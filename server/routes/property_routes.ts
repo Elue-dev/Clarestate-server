@@ -5,7 +5,7 @@ import {
   getAllProperties,
   getSingleProperty,
   updateProperty,
-  uplodaProperyPhotos,
+  uploadProperyPhotos,
 } from "../controllers/property_controller";
 import { requireAuth, restrictTo } from "../middlewares/auth_middleware";
 import reviewRouter from "../routes/review_routes";
@@ -16,14 +16,14 @@ const router = Router();
 router.use("/:propertyID/reviews", reviewRouter);
 router.use("/:propertyID/comments", commentRouter);
 
-router.use(requireAuth);
-
 router
   .route("/")
   .get(getAllProperties)
-  .post(uplodaProperyPhotos, createProperty);
+  .post(requireAuth, uploadProperyPhotos, createProperty);
 
 router.get("/:slug", getSingleProperty);
+
+router.use(requireAuth);
 
 router
   .route("/:propertyID")
