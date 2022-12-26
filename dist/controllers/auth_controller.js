@@ -21,12 +21,12 @@ const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const verification_email_1 = require("../views/verification_email");
 const crypto_1 = require("crypto");
 const token_model_1 = __importDefault(require("../models/schemas/token_model"));
-const verification_success_1 = require("../views/verification_success");
+const verification_success_email_1 = require("../views/verification_success-email");
 const cryptr_1 = require("../utils/cryptr");
 const reset_email_1 = require("../views/reset_email");
-const reset_success_1 = require("../views/reset_success");
+const reset_success_email_1 = require("../views/reset_success_email");
 const ua_parser_js_1 = __importDefault(require("ua-parser-js"));
-const update_success_1 = require("../views/update_success");
+const update_success_email_1 = require("../views/update_success_email");
 exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { first_name, last_name, email, password } = req.body;
     if (!first_name || !last_name || !email || !password) {
@@ -101,7 +101,7 @@ exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(v
     const send_to = user.email;
     const sent_from = process.env.EMAIL_USER;
     const reply_to = process.env.REPLY_TO;
-    const body = (0, verification_success_1.verificationSuccess)(user.last_name);
+    const body = (0, verification_success_email_1.verificationSuccess)(user.last_name);
     try {
         (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
     }
@@ -265,7 +265,7 @@ exports.resetPassword = (0, handle_async_1.default)((req, res, next) => __awaite
     const send_to = user === null || user === void 0 ? void 0 : user.email;
     const sent_from = process.env.EMAIL_USER;
     const reply_to = process.env.REPLY_TO;
-    const body = (0, reset_success_1.resetSuccess)({
+    const body = (0, reset_success_email_1.resetSuccess)({
         //@ts-ignore
         username: user === null || user === void 0 ? void 0 : user.last_name,
         //@ts-ignore
@@ -314,7 +314,7 @@ exports.updatePassword = (0, handle_async_1.default)((req, res, next) => __await
     const send_to = user === null || user === void 0 ? void 0 : user.email;
     const sent_from = process.env.EMAIL_USER;
     const reply_to = process.env.REPLY_TO;
-    const body = (0, update_success_1.updateSuccess)({
+    const body = (0, update_success_email_1.updateSuccess)({
         //@ts-ignore
         username: user === null || user === void 0 ? void 0 : user.last_name,
         //@ts-ignore

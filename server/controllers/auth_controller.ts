@@ -7,12 +7,12 @@ import handleAsync from "../utils/handle_async";
 import { verificationEmail } from "../views/verification_email";
 import { createHash, randomBytes } from "crypto";
 import Token from "../models/schemas/token_model";
-import { verificationSuccess } from "../views/verification_success";
+import { verificationSuccess } from "../views/verification_success-email";
 import { cryptr } from "../utils/cryptr";
 import { passwordResetEmail } from "../views/reset_email";
-import { resetSuccess } from "../views/reset_success";
+import { resetSuccess } from "../views/reset_success_email";
 import parser from "ua-parser-js";
-import { updateSuccess } from "../views/update_success";
+import { updateSuccess } from "../views/update_success_email";
 
 export const signup = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {

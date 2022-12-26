@@ -18,7 +18,7 @@ const user_model_1 = __importDefault(require("../models/schemas/user_model"));
 const email_service_1 = __importDefault(require("../services/email_service"));
 const global_error_1 = require("../utils/global_error");
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
-const delete_account_1 = require("../views/delete_account");
+const delete_account_email_1 = require("../views/delete_account_email");
 exports.getAllUsers = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const cachedUsers = yield app_1.redisClient.get("clarUsers");
@@ -118,7 +118,7 @@ exports.deleteLoggedInUser = (0, handle_async_1.default)((req, res, next) => __a
     const send_to = user.email;
     const sent_from = process.env.EMAIL_USER;
     const reply_to = process.env.REPLY_TO;
-    const body = (0, delete_account_1.deleteAccount)(user.first_name);
+    const body = (0, delete_account_email_1.deleteAccount)(user.first_name);
     try {
         (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
         res.status(200).json({
