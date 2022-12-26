@@ -45,6 +45,17 @@ export const createProperty = handleAsync(
 export const getAllProperties = handleAsync(
   async (req: Request, res: Response) => {
     //@ts-ignore
+    const cachedProperties = await redisClient.get("all_prop");
+
+    if (cachedProperties) {
+      return res.status(200).json({
+        status: "success redis",
+        // results: cachedProperties.length,
+        properties: JSON.parse(cachedProperties),
+      });
+    }
+
+    //@ts-ignore
     const features = new APIFeatures(Property.find(), req.query)
       .filter()
       .sort()
@@ -53,9 +64,11 @@ export const getAllProperties = handleAsync(
     //@ts-ignore
     const properties = await features.query;
 
+    await redisClient.set("all_prop", JSON.stringify(properties));
+
     res.status(200).json({
       status: "success",
-      results: properties.length,
+      // results: properties.length,
       properties,
     });
   }
@@ -65,6 +78,16 @@ export const getSingleProperty = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { slug } = req.params;
 
+    const cachedProperty = await redisClient.get(slug);
+
+    if (cachedProperty) {
+      return res.status(200).json({
+        status: "success redis",
+        // results: cachedProperties.length,
+        property: JSON.parse(cachedProperty),
+      });
+    }
+
     const property = await Property.findOne({ slug })
       .populate("reviews")
       .populate("comments");
@@ -72,6 +95,8 @@ export const getSingleProperty = handleAsync(
     if (!property) {
       return next(new GlobalError("Property not found", 404));
     }
+
+    await redisClient.set(slug, JSON.stringify(property));
 
     res.status(200).json({
       status: "success",
@@ -97,6 +122,13 @@ export const updateProperty = handleAsync(
     if (!property) {
       return next(new GlobalError("Property not found", 404));
     }
+
+    const propertyToCache: any = await Property.findById(propertyID);
+
+    console.log(propertyToCache);
+
+    await redisClient.DEL("all_prop");
+    await redisClient.DEL(propertyToCache.slug);
 
     res.status(200).json({
       status: "success",
@@ -128,6 +160,10 @@ export const deleteProperty = handleAsync(
     }
 
     await Property.findByIdAndDelete(propertyID);
+
+    await redisClient.del("all_prop");
+    //@ts-ignore
+    await redisClient.del(property.slug);
 
     res.status(200).json({
       status: "success",
