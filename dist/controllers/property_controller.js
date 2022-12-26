@@ -20,7 +20,6 @@ const file_upload_1 = require("../utils/file_upload");
 const global_error_1 = require("../utils/global_error");
 const api_features_1 = require("../services/api_features");
 const reviews_model_1 = __importDefault(require("../models/schemas/reviews_model"));
-const app_1 = require("../app");
 const cloud = cloudinary_1.default.v2;
 exports.createProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     cloud.config({
@@ -47,42 +46,23 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
 }));
 exports.getAllProperties = (0, handle_async_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
-    const cachedProperties = yield app_1.redisClient.get("clarProp");
-    if (cachedProperties) {
-        return res.status(200).json({
-            status: "success",
-            // results: cachedProperties.length,
-            properties: JSON.parse(cachedProperties),
-        });
-    }
-    //@ts-ignore
     const features = new api_features_1.APIFeatures(property_model_1.default.find(), req.query)
         .filter()
         .sort()
         .limitFields();
     //@ts-ignore
     const properties = yield features.query;
-    yield app_1.redisClient.set("clarProp", JSON.stringify(properties));
     res.status(200).json({
         status: "success",
-        // results: properties.length,
+        results: properties.length,
         properties,
     });
 }));
 exports.getSingleProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { slug } = req.params;
-    //@ts-ignore
-    const cachedProperty = yield app_1.redisClient.get(slug);
-    if (cachedProperty) {
-        return res.status(200).json({
-            status: "success",
-            property: JSON.parse(cachedProperty),
-        });
-    }
     const property = yield property_model_1.default.findOne({ slug })
         .populate("reviews")
         .populate("comments");
-    yield app_1.redisClient.set(slug, JSON.stringify(property));
     if (!property) {
         return next(new global_error_1.GlobalError("Property not found", 404));
     }

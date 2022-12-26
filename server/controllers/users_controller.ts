@@ -13,6 +13,7 @@ export const getAllUsers = handleAsync(
 
     res.status(200).json({
       status: "success",
+      results: users.length,
       users,
     });
   }

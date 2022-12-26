@@ -24,6 +24,7 @@ exports.getAllUsers = (0, handle_async_1.default)((req, res, next) => __awaiter(
         .select("+active");
     res.status(200).json({
         status: "success",
+        results: users.length,
         users,
     });
 }));

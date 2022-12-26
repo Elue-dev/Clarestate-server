@@ -45,17 +45,6 @@ export const createProperty = handleAsync(
 export const getAllProperties = handleAsync(
   async (req: Request, res: Response) => {
     //@ts-ignore
-    const cachedProperties = await redisClient.get("clarProp");
-
-    if (cachedProperties) {
-      return res.status(200).json({
-        status: "success",
-        // results: cachedProperties.length,
-        properties: JSON.parse(cachedProperties),
-      });
-    }
-
-    //@ts-ignore
     const features = new APIFeatures(Property.find(), req.query)
       .filter()
       .sort()
@@ -64,11 +53,9 @@ export const getAllProperties = handleAsync(
     //@ts-ignore
     const properties = await features.query;
 
-    await redisClient.set("clarProp", JSON.stringify(properties));
-
     res.status(200).json({
       status: "success",
-      // results: properties.length,
+      results: properties.length,
       properties,
     });
   }
@@ -78,21 +65,9 @@ export const getSingleProperty = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { slug } = req.params;
 
-    //@ts-ignore
-    const cachedProperty = await redisClient.get(slug);
-
-    if (cachedProperty) {
-      return res.status(200).json({
-        status: "success",
-        property: JSON.parse(cachedProperty),
-      });
-    }
-
     const property = await Property.findOne({ slug })
       .populate("reviews")
       .populate("comments");
-
-    await redisClient.set(slug, JSON.stringify(property));
 
     if (!property) {
       return next(new GlobalError("Property not found", 404));
