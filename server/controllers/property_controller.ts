@@ -45,6 +45,17 @@ export const createProperty = handleAsync(
 export const getAllProperties = handleAsync(
   async (req: Request, res: Response) => {
     //@ts-ignore
+    const cachedProperties = await redisClient.get("clarProp");
+
+    if (cachedProperties) {
+      return res.status(200).json({
+        status: "success from redis",
+        // results: cachedProperties.length,
+        properties: JSON.parse(cachedProperties),
+      });
+    }
+
+    //@ts-ignore
     const features = new APIFeatures(Property.find(), req.query)
       .filter()
       .sort()
@@ -53,9 +64,11 @@ export const getAllProperties = handleAsync(
     //@ts-ignore
     const properties = await features.query;
 
+    await redisClient.set("clarProp", JSON.stringify(properties));
+
     res.status(200).json({
       status: "success",
-      results: properties.length,
+      // results: properties.length,
       properties,
     });
   }

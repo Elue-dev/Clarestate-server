@@ -47,15 +47,25 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
 }));
 exports.getAllProperties = (0, handle_async_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
+    const cachedProperties = yield app_1.redisClient.get("clarProp");
+    if (cachedProperties) {
+        return res.status(200).json({
+            status: "success from redis",
+            // results: cachedProperties.length,
+            properties: JSON.parse(cachedProperties),
+        });
+    }
+    //@ts-ignore
     const features = new api_features_1.APIFeatures(property_model_1.default.find(), req.query)
         .filter()
         .sort()
         .limitFields();
     //@ts-ignore
     const properties = yield features.query;
+    yield app_1.redisClient.set("clarProp", JSON.stringify(properties));
     res.status(200).json({
         status: "success",
-        results: properties.length,
+        // results: properties.length,
         properties,
     });
 }));
