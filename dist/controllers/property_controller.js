@@ -12,14 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uplodaProperyPhotos = exports.getPropertyReviews = exports.deleteProperty = exports.updateProperty = exports.getSingleProperty = exports.getAllProperties = exports.createProperty = void 0;
+exports.uplodaProperyPhotos = exports.deleteProperty = exports.updateProperty = exports.getSingleProperty = exports.getAllProperties = exports.createProperty = void 0;
 const property_model_1 = __importDefault(require("../models/schemas/property_model"));
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const cloudinary_1 = __importDefault(require("cloudinary"));
 const file_upload_1 = require("../utils/file_upload");
 const global_error_1 = require("../utils/global_error");
 const api_features_1 = require("../services/api_features");
-const reviews_model_1 = __importDefault(require("../models/schemas/reviews_model"));
 const app_1 = require("../app");
 const cloud = cloudinary_1.default.v2;
 exports.createProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -46,12 +45,10 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
     });
 }));
 exports.getAllProperties = (0, handle_async_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    //@ts-ignore
     const cachedProperties = yield app_1.redisClient.get("all_prop");
     if (cachedProperties) {
         return res.status(200).json({
-            status: "success redis",
-            // results: cachedProperties.length,
+            status: "success",
             properties: JSON.parse(cachedProperties),
         });
     }
@@ -60,12 +57,10 @@ exports.getAllProperties = (0, handle_async_1.default)((req, res) => __awaiter(v
         .filter()
         .sort()
         .limitFields();
-    //@ts-ignore
     const properties = yield features.query;
     yield app_1.redisClient.set("all_prop", JSON.stringify(properties));
     res.status(200).json({
         status: "success",
-        // results: properties.length,
         properties,
     });
 }));
@@ -74,8 +69,7 @@ exports.getSingleProperty = (0, handle_async_1.default)((req, res, next) => __aw
     const cachedProperty = yield app_1.redisClient.get(slug);
     if (cachedProperty) {
         return res.status(200).json({
-            status: "success redis",
-            // results: cachedProperties.length,
+            status: "success",
             property: JSON.parse(cachedProperty),
         });
     }
@@ -96,7 +90,6 @@ exports.updateProperty = (0, handle_async_1.default)((req, res, next) => __await
     if (req.body.id || req.body._id) {
         return next(new global_error_1.GlobalError("property ID cannot be modified", 404));
     }
-    //@ts-ignore
     const property = yield property_model_1.default.findByIdAndUpdate(propertyID, req.body, {
         new: true,
         runValidators: true,
@@ -107,6 +100,7 @@ exports.updateProperty = (0, handle_async_1.default)((req, res, next) => __await
     const propertyToCache = yield property_model_1.default.findById(propertyID);
     console.log(propertyToCache);
     yield app_1.redisClient.DEL("all_prop");
+    //@ts-ignore
     yield app_1.redisClient.DEL(propertyToCache.slug);
     res.status(200).json({
         status: "success",
@@ -131,14 +125,6 @@ exports.deleteProperty = (0, handle_async_1.default)((req, res, next) => __await
     yield app_1.redisClient.del("all_prop");
     //@ts-ignore
     yield app_1.redisClient.del(property.slug);
-    res.status(200).json({
-        status: "success",
-        message: "Property deleted successfully",
-    });
-}));
-exports.getPropertyReviews = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { propertyID } = req.params;
-    const review = reviews_model_1.default.findById(propertyID);
     res.status(200).json({
         status: "success",
         message: "Property deleted successfully",
