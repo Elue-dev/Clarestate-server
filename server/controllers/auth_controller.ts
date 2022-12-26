@@ -7,7 +7,7 @@ import handleAsync from "../utils/handle_async";
 import { verificationEmail } from "../views/verification_email";
 import { createHash, randomBytes } from "crypto";
 import Token from "../models/schemas/token_model";
-import { verificationSuccess } from "../views/verification_success-email";
+import { verificationSuccess } from "../views/verification_success_email";
 import { cryptr } from "../utils/cryptr";
 import { passwordResetEmail } from "../views/reset_email";
 import { resetSuccess } from "../views/reset_success_email";
@@ -191,13 +191,12 @@ export const login = handleAsync(
       );
     }
 
-    const user = await User.findOne({
+    const user: any = await User.findOne({
       $or: [{ email }, { phone }],
     })
       .select("+password")
       .select("+userAgents");
 
-    //@ts-ignore
     if (!user || !(await user.correctPassword(password, user.password))) {
       return next(new GlobalError("Invalid credentials provided", 400));
     }

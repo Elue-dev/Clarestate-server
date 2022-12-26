@@ -21,7 +21,7 @@ const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const verification_email_1 = require("../views/verification_email");
 const crypto_1 = require("crypto");
 const token_model_1 = __importDefault(require("../models/schemas/token_model"));
-const verification_success_email_1 = require("../views/verification_success-email");
+const verification_success_email_1 = require("../views/verification_success_email");
 const cryptr_1 = require("../utils/cryptr");
 const reset_email_1 = require("../views/reset_email");
 const reset_success_email_1 = require("../views/reset_success_email");
@@ -166,7 +166,6 @@ exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0
     })
         .select("+password")
         .select("+userAgents");
-    //@ts-ignore
     if (!user || !(yield user.correctPassword(password, user.password))) {
         return next(new global_error_1.GlobalError("Invalid credentials provided", 400));
     }
