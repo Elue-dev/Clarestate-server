@@ -16,6 +16,7 @@ export const getAllUsers = handleAsync(
         users: JSON.parse(cachedUsers),
       });
     }
+
     const users = await User.find({ active: { $ne: false } })
       .sort("-createdAt")
       .select("+active");
@@ -32,6 +33,14 @@ export const getAllUsers = handleAsync(
 export const getSingleUser = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userID } = req.params;
+    const cachedUser = await redisClient.get(`user-${userID}`);
+
+    if (cachedUser) {
+      return res.status(200).json({
+        status: "success",
+        user: JSON.parse(cachedUser),
+      });
+    }
 
     const user = await User.findOne({
       _id: userID,
@@ -41,6 +50,8 @@ export const getSingleUser = handleAsync(
     if (!user) {
       return next(new GlobalError("No user found", 404));
     }
+
+    await redisClient.set(`user-${userID}`, JSON.stringify(user));
 
     res.status(200).json({
       status: "success",
@@ -94,6 +105,9 @@ export const updateUser = handleAsync(
       new: true,
       runValidators: true,
     });
+
+    await redisClient.del(`user-${userID}`);
+    await redisClient.del("all_users");
 
     res.status(200).json({
       status: "success",
@@ -181,6 +195,9 @@ export const deleteUser = handleAsync(
     user.active = false;
 
     await user.save();
+
+    await redisClient.del(`user-${userID}`);
+    await redisClient.del("all_users");
 
     res.status(200).json({
       status: "success",

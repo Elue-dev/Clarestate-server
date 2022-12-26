@@ -118,15 +118,12 @@ export const updateProperty = handleAsync(
       return next(new GlobalError("Property not found", 404));
     }
 
-    const propertyToCache: PropertyTypes | null = await Property.findById(
-      propertyID
-    );
-
-    console.log(propertyToCache);
+    const propertyToRevovedFromCache: PropertyTypes | null =
+      await Property.findById(propertyID);
 
     await redisClient.DEL("all_prop");
     //@ts-ignore
-    await redisClient.DEL(propertyToCache.slug);
+    await redisClient.DEL(propertyToRevovedFromCache.slug);
 
     res.status(200).json({
       status: "success",

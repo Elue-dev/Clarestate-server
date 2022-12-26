@@ -38,6 +38,13 @@ exports.getAllUsers = (0, handle_async_1.default)((req, res, next) => __awaiter(
 }));
 exports.getSingleUser = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { userID } = req.params;
+    const cachedUser = yield app_1.redisClient.get(`user-${userID}`);
+    if (cachedUser) {
+        return res.status(200).json({
+            status: "success",
+            user: JSON.parse(cachedUser),
+        });
+    }
     const user = yield user_model_1.default.findOne({
         _id: userID,
         active: { $ne: false },
@@ -45,6 +52,7 @@ exports.getSingleUser = (0, handle_async_1.default)((req, res, next) => __awaite
     if (!user) {
         return next(new global_error_1.GlobalError("No user found", 404));
     }
+    yield app_1.redisClient.set(`user-${userID}`, JSON.stringify(user));
     res.status(200).json({
         status: "success",
         user,
@@ -77,6 +85,8 @@ exports.updateUser = (0, handle_async_1.default)((req, res, next) => __awaiter(v
         new: true,
         runValidators: true,
     });
+    yield app_1.redisClient.del(`user-${userID}`);
+    yield app_1.redisClient.del("all_users");
     res.status(200).json({
         status: "success",
         updatedUser,
@@ -141,6 +151,8 @@ exports.deleteUser = (0, handle_async_1.default)((req, res, next) => __awaiter(v
     }
     user.active = false;
     yield user.save();
+    yield app_1.redisClient.del(`user-${userID}`);
+    yield app_1.redisClient.del("all_users");
     res.status(200).json({
         status: "success",
         message: "User sucessfully deleted",

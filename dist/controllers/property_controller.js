@@ -97,11 +97,10 @@ exports.updateProperty = (0, handle_async_1.default)((req, res, next) => __await
     if (!property) {
         return next(new global_error_1.GlobalError("Property not found", 404));
     }
-    const propertyToCache = yield property_model_1.default.findById(propertyID);
-    console.log(propertyToCache);
+    const propertyToRevovedFromCache = yield property_model_1.default.findById(propertyID);
     yield app_1.redisClient.DEL("all_prop");
     //@ts-ignore
-    yield app_1.redisClient.DEL(propertyToCache.slug);
+    yield app_1.redisClient.DEL(propertyToRevovedFromCache.slug);
     res.status(200).json({
         status: "success",
         message: "Property updated successfully",
