@@ -13,18 +13,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUser = exports.deleteLoggedInUser = exports.getLoggedInUser = exports.updateUser = exports.getSingleUser = exports.getAllUsers = void 0;
+const app_1 = require("../app");
 const user_model_1 = __importDefault(require("../models/schemas/user_model"));
 const email_service_1 = __importDefault(require("../services/email_service"));
 const global_error_1 = require("../utils/global_error");
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const delete_account_email_1 = require("../views/delete_account_email");
 exports.getAllUsers = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const cachedUsers = yield app_1.redisClient.get("all_users");
+    if (cachedUsers) {
+        return res.status(200).json({
+            status: "success",
+            users: JSON.parse(cachedUsers),
+        });
+    }
     const users = yield user_model_1.default.find({ active: { $ne: false } })
         .sort("-createdAt")
         .select("+active");
+    yield app_1.redisClient.set("all_users", JSON.stringify(users));
     res.status(200).json({
         status: "success",
-        results: users.length,
         users,
     });
 }));

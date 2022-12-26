@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { redisClient } from "../app";
 import User from "../models/schemas/user_model";
 import sendEmail from "../services/email_service";
 import { GlobalError } from "../utils/global_error";
@@ -7,13 +8,22 @@ import { deleteAccount } from "../views/delete_account_email";
 
 export const getAllUsers = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    const cachedUsers = await redisClient.get("all_users");
+
+    if (cachedUsers) {
+      return res.status(200).json({
+        status: "success",
+        users: JSON.parse(cachedUsers),
+      });
+    }
     const users = await User.find({ active: { $ne: false } })
       .sort("-createdAt")
       .select("+active");
 
+    await redisClient.set("all_users", JSON.stringify(users));
+
     res.status(200).json({
       status: "success",
-      results: users.length,
       users,
     });
   }
