@@ -73,6 +73,7 @@ const verificationEmail = ({ username, verificationCode, url, }) => {
                       </table>
                   </td>
               </tr>
+<<<<<<< HEAD
           </table>
           <!--/100% body table-->
       </body>

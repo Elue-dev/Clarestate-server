@@ -157,12 +157,12 @@ exports.sendVerificationCode = (0, handle_async_1.default)((req, res, next) => _
     }
 }));
 exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password, phone } = req.body;
-    if ((!email && !phone) || !password) {
-        return next(new global_error_1.GlobalError("phone number or email and password are required", 400));
+    const { emailOrPhone, password } = req.body;
+    if (!emailOrPhone || !password) {
+        return next(new global_error_1.GlobalError("Email or phone number and password are both required", 400));
     }
     const user = yield user_model_1.default.findOne({
-        $or: [{ email }, { phone }],
+        $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
     })
         .select("+password")
         .select("+userAgents");

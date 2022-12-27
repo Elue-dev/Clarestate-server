@@ -183,16 +183,19 @@ export const sendVerificationCode = handleAsync(
 
 export const login = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { email, password, phone } = req.body;
+    const { emailOrPhone, password } = req.body;
 
-    if ((!email && !phone) || !password) {
+    if (!emailOrPhone || !password) {
       return next(
-        new GlobalError("phone number or email and password are required", 400)
+        new GlobalError(
+          "Email or phone number and password are both required",
+          400
+        )
       );
     }
 
     const user: any = await User.findOne({
-      $or: [{ email }, { phone }],
+      $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
     })
       .select("+password")
       .select("+userAgents");
