@@ -136,7 +136,6 @@ exports.sendVerificationCode = (0, handle_async_1.default)((req, res, next) => _
     const send_to = email;
     const sent_from = process.env.EMAIL_USER;
     const reply_to = process.env.REPLY_TO;
-    const url = `https://test.com/${user._id}`;
     const body = (0, verification_email_1.verificationEmail)({
         username: user.first_name,
         verificationCode,
