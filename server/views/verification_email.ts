@@ -76,13 +76,6 @@ export const verificationEmail = ({
                       </table>
                   </td>
               </tr>
-<<<<<<< HEAD
-          </table>
-          <!--/100% body table-->
-      </body>
-      
-      </html>`;
-=======
               <tr>
                 <td style="height: 20px">&nbsp;</td>
               </tr>
@@ -209,5 +202,4 @@ export const verificationEmail = ({
     </body>
   </html>
   ;`;
->>>>>>> 40e91c6 (feat: sign up code verification and resending verification email codes functionality completed)
 };
