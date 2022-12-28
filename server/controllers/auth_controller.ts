@@ -16,7 +16,7 @@ import { updateSuccess } from "../views/update_success_email";
 
 export const signup = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { first_name, last_name, email, password } = req.body;
+    const { first_name, last_name, email, password, phone } = req.body;
 
     if (!first_name || !last_name || !email || !password) {
       return next(new GlobalError("Please fill in all required fields", 400));
@@ -42,6 +42,7 @@ export const signup = handleAsync(
       last_name,
       email,
       password,
+      phone,
       active: false,
       verificationCode: encryptedCode,
       codeExpires: Date.now() + 60 * (60 * 1000),

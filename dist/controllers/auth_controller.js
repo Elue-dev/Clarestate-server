@@ -28,7 +28,7 @@ const reset_success_email_1 = require("../views/reset_success_email");
 const ua_parser_js_1 = __importDefault(require("ua-parser-js"));
 const update_success_email_1 = require("../views/update_success_email");
 exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { first_name, last_name, email, password } = req.body;
+    const { first_name, last_name, email, password, phone } = req.body;
     if (!first_name || !last_name || !email || !password) {
         return next(new global_error_1.GlobalError("Please fill in all required fields", 400));
     }
@@ -47,6 +47,7 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
         last_name,
         email,
         password,
+        phone,
         active: false,
         verificationCode: encryptedCode,
         codeExpires: Date.now() + 60 * (60 * 1000),
