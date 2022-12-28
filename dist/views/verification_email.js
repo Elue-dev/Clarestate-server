@@ -69,93 +69,11 @@ const verificationEmail = ({ username, verificationCode, }) => {
                       -moz-box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.06);
                       box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.06);
                     "
-                  >
-                    <tr>
-                      <td style="height: 40px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                      <td style="padding: 0 35px">
-                        <h1
-                          style="
-                            color: #1e1e2d;
-                            font-weight: 500;
-                            margin: 0;
-                            font-size: 28px;
-                            font-family: 'Rubik', sans-serif;
-                            text-align: left;
-                          "
-                        >
-                          Hi, ${username}
-                        </h1>
-                        <span
-                          style="
-                            display: flex;
-                            vertical-align: middle;
-                            margin: 29px 0 26px;
-                            border-bottom: 1px solid #cecece;
-                            width: 100px;
-                          "
-                        ></span>
-                        <span style="text-align: left">
-                          <p
-                            style="
-                              color: #455056;
-                              font-size: 15px;
-                              line-height: 24px;
-                              margin: 0;
-                            "
-                          >
-                            Thank you for signing up to Clarestate! You are almost
-                            ready to get started, but first, you need to verify
-                            your email address using the verification below.
-                          </p>
-                          <br />
-                          <p
-                            style="
-                              color: #455056;
-                              font-size: 15px;
-                              line-height: 24px;
-                              margin: 0;
-                            "
-                          >
-                            Your verification code is <b>${verificationCode}</b> -
-                            Valid for only 1 hour
-                          </p>
-                        </span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="height: 40px">&nbsp;</td>
-                    </tr>
-                  </table>
+                  ></table>
                 </td>
-              </tr>
-  
-              <tr>
-                <td style="height: 20px">&nbsp;</td>
-              </tr>
-              <tr>
-                <td style="text-align: center">
-                  <p
-                    style="
-                      font-size: 14px;
-                      color: rgba(69, 80, 86, 0.7411764705882353);
-                      line-height: 18px;
-                      margin: 0 0 0;
-                    "
-                  >
-                    &copy; <strong>Clarestate Inc, Nigeria</strong>
-                  </p>
-                </td>
-              </tr>
-              <tr>
-                <td style="height: 80px">&nbsp;</td>
               </tr>
             </table>
           </td>
-        </tr>
-        <tr>
-          <td style="height: 20px">&nbsp;</td>
         </tr>
         <tr>
           <td>
@@ -221,7 +139,6 @@ const verificationEmail = ({ username, verificationCode, }) => {
                         font-size: 15px;
                         line-height: 24px;
                         margin: 0;
-                        text-align: center;
                       "
                     >
                       Your verification code:
@@ -229,7 +146,7 @@ const verificationEmail = ({ username, verificationCode, }) => {
                     <p
                       style="
                         font-size: 22px;
-                        text-align: center;
+  
                         font-weight: 700;
                       "
                     >
@@ -241,7 +158,6 @@ const verificationEmail = ({ username, verificationCode, }) => {
                         font-size: 15px;
                         line-height: 24px;
                         margin: 0;
-                        text-align: center;
                       "
                     >
                       (Valid for only 1 hour)
@@ -279,6 +195,6 @@ const verificationEmail = ({ username, verificationCode, }) => {
       </table>
     </body>
   </html>
-  ;`;
+  `;
 };
 exports.verificationEmail = verificationEmail;
