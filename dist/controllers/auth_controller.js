@@ -119,8 +119,11 @@ exports.sendVerificationCode = (0, handle_async_1.default)((req, res, next) => _
     }
     const user = yield user_model_1.default.findOne({ email });
     //@ts-ignore
-    if (!user || user.isVerified) {
-        return next(new global_error_1.GlobalError("Email already verified or account dosen't exist", 400));
+    if (!user) {
+        return next(new global_error_1.GlobalError("Account dosen't exist", 400));
+    }
+    else if (user.isVerified) {
+        return next(new global_error_1.GlobalError("Email already verified", 400));
     }
     const code = Math.floor(100000 + Math.random() * 900000);
     const verificationCode = code.toString();
@@ -306,7 +309,7 @@ exports.updatePassword = (0, handle_async_1.default)((req, res, next) => __await
     const userAgent = (0, ua_parser_js_1.default)(req.headers["user-agent"]);
     const browser = userAgent.browser.name || "Not detected";
     const OS = `${userAgent.os.name || "Not detected"} (${userAgent.os.version || "Not detected"})`;
-    const subject = `${user === null || user === void 0 ? void 0 : user.first_name}, Your password was successfully changed`;
+    const subject = `Clarestate Password Changed`;
     const send_to = user === null || user === void 0 ? void 0 : user.email;
     const sent_from = process.env.EMAIL_USER;
     const reply_to = process.env.REPLY_TO;

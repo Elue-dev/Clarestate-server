@@ -137,10 +137,10 @@ export const sendVerificationCode = handleAsync(
     const user = await User.findOne({ email });
 
     //@ts-ignore
-    if (!user || user.isVerified) {
-      return next(
-        new GlobalError("Email already verified or account dosen't exist", 400)
-      );
+    if (!user) {
+      return next(new GlobalError("Account dosen't exist", 400));
+    } else if (user.isVerified) {
+      return next(new GlobalError("Email already verified", 400));
     }
 
     const code = Math.floor(100000 + Math.random() * 900000);
@@ -402,7 +402,7 @@ export const updatePassword = handleAsync(
       userAgent.os.version || "Not detected"
     })`;
 
-    const subject = `${user?.first_name}, Your password was successfully changed`;
+    const subject = `Clarestate Password Changed`;
     const send_to = user?.email;
     const sent_from = process.env.EMAIL_USER as string;
     const reply_to = process.env.REPLY_TO as string;
