@@ -3,7 +3,6 @@ import { verificationType } from "../models/types/email_types";
 export const verificationEmail = ({
   username,
   verificationCode,
-  url,
 }: verificationType) => {
   return `
           
@@ -52,9 +51,6 @@ export const verificationEmail = ({
                                                 <br>
                                               <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">Your verification code is <b>${verificationCode}</b> - Valid for only 1 hour</p>
                                               </span>
-                                              <a href="${url}"
-                                            style="background:#20e277;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Verify email
-                                            </a>
                                           </td>
                                       </tr>
                                       <tr>

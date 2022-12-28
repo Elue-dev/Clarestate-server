@@ -10,7 +10,7 @@ const generateToken = (id) => {
         expiresIn: process.env.JWT_EXPIRES_IN,
     });
 };
-const createAndSendToken = (user, statusCode, res) => {
+const createAndSendToken = (user, statusCode, res, type) => {
     const token = generateToken(user._id);
     const cookieOptions = {
         expires: new Date(
@@ -20,14 +20,25 @@ const createAndSendToken = (user, statusCode, res) => {
         httpOnly: true,
         secure: false,
     };
-    // if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+    if (process.env.NODE_ENV === "production")
+        cookieOptions.secure = true;
     res.cookie("token", token, cookieOptions);
     user.password = undefined;
-    res.status(statusCode).json({
-        status: "success",
-        token,
-        user,
-    });
+    if (type === "verify") {
+        res.status(statusCode).json({
+            status: "success",
+            message: "Email verified successfully",
+            token,
+            user,
+        });
+    }
+    else {
+        res.status(statusCode).json({
+            status: "success",
+            token,
+            user,
+        });
+    }
 };
 exports.createAndSendToken = createAndSendToken;
 const validateEmail = (email) => {

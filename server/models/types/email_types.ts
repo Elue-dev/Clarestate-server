@@ -16,7 +16,6 @@ export interface passwordResetType {
 export interface verificationType {
   username: string;
   verificationCode: string;
-  url: string;
 }
 
 export interface resetSuccessType {

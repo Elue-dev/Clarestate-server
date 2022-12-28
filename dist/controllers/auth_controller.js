@@ -55,16 +55,15 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
     const send_to = email;
     const sent_from = process.env.EMAIL_USER;
     const reply_to = process.env.REPLY_TO;
-    const url = `https://test.com/${user._id}`;
     const body = (0, verification_email_1.verificationEmail)({
         username: user.first_name,
         verificationCode,
-        url,
     });
     try {
         (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
         res.status(200).json({
             status: "success",
+            userID: user._id,
             message: `A verification code has been sent to ${email}`,
         });
     }
@@ -111,7 +110,7 @@ exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(v
             message: `Email not sent. Please try again.`,
         });
     }
-    (0, auth_service_1.createAndSendToken)(user, 201, res);
+    (0, auth_service_1.createAndSendToken)(user, 201, res, "verified");
 }));
 exports.sendVerificationCode = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.body;
@@ -139,7 +138,6 @@ exports.sendVerificationCode = (0, handle_async_1.default)((req, res, next) => _
     const body = (0, verification_email_1.verificationEmail)({
         username: user.first_name,
         verificationCode,
-        url,
     });
     try {
         (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
@@ -175,7 +173,7 @@ exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0
     yield user.save();
     //@ts-ignore
     user === null || user === void 0 ? void 0 : user.userAgents = undefined;
-    (0, auth_service_1.createAndSendToken)(user, 200, res);
+    (0, auth_service_1.createAndSendToken)(user, 200, res, "login");
 }));
 exports.logout = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.cookie("token", "", {
@@ -185,7 +183,7 @@ exports.logout = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
     });
     res.status(200).json({
         status: "success",
-        message: "You have been successfully logged out",
+        message: "Logout successful",
     });
 }));
 exports.forgotPassword = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

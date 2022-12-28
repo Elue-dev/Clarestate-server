@@ -51,17 +51,16 @@ export const signup = handleAsync(
     const send_to = email;
     const sent_from = process.env.EMAIL_USER as string;
     const reply_to = process.env.REPLY_TO as string;
-    const url = `https://test.com/${user._id}`;
     const body = verificationEmail({
       username: user.first_name,
       verificationCode,
-      url,
     });
 
     try {
       sendEmail({ subject, body, send_to, sent_from, reply_to });
       res.status(200).json({
         status: "success",
+        userID: user._id,
         message: `A verification code has been sent to ${email}`,
       });
     } catch (error) {
@@ -123,7 +122,7 @@ export const verifyCode = handleAsync(
       });
     }
 
-    createAndSendToken(user, 201, res);
+    createAndSendToken(user, 201, res, "verified");
   }
 );
 
@@ -162,7 +161,6 @@ export const sendVerificationCode = handleAsync(
     const body = verificationEmail({
       username: user.first_name,
       verificationCode,
-      url,
     });
 
     try {
@@ -214,7 +212,7 @@ export const login = handleAsync(
     //@ts-ignore
     user?.userAgents = undefined;
 
-    createAndSendToken(user, 200, res);
+    createAndSendToken(user, 200, res, "login");
   }
 );
 
@@ -228,7 +226,7 @@ export const logout = handleAsync(
 
     res.status(200).json({
       status: "success",
-      message: "You have been successfully logged out",
+      message: "Logout successful",
     });
   }
 );

@@ -10,7 +10,8 @@ const generateToken = (id: string) => {
 export const createAndSendToken = (
   user: any,
   statusCode: number,
-  res: Response
+  res: Response,
+  type: string
 ) => {
   const token = generateToken(user._id);
 
@@ -24,17 +25,26 @@ export const createAndSendToken = (
     secure: false,
   };
 
-  // if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
   res.cookie("token", token, cookieOptions);
 
   user.password = undefined;
 
-  res.status(statusCode).json({
-    status: "success",
-    token,
-    user,
-  });
+  if (type === "verify") {
+    res.status(statusCode).json({
+      status: "success",
+      message: "Email verified successfully",
+      token,
+      user,
+    });
+  } else {
+    res.status(statusCode).json({
+      status: "success",
+      token,
+      user,
+    });
+  }
 };
 
 export const validateEmail = (email: string) => {
