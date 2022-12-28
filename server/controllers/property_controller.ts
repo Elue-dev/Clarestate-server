@@ -5,11 +5,12 @@ import cloudinary from "cloudinary";
 import { upload } from "../utils/file_upload";
 import { GlobalError } from "../utils/global_error";
 import { APIFeatures } from "../services/api_features";
-// import Review from "../models/schemas/reviews_model";
-// import { redisClient } from "../app";
-import { PropertyTypes } from "../models/types/property_types";
+import fs from "fs";
+import { promisify } from "util";
 
 const cloud = cloudinary.v2;
+
+const unlinkAsync = promisify(fs.unlink);
 
 export const createProperty = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -18,6 +19,9 @@ export const createProperty = handleAsync(
       api_key: process.env.CLOUDINARY_KEY as string,
       api_secret: process.env.CLOUDINARY_SECRET as string,
     });
+
+    //@ts-ignore
+    req.body.addedBy = req.user._id;
 
     let uploadedFiles: any = [];
 
@@ -30,6 +34,8 @@ export const createProperty = handleAsync(
           folder: "Clarestate",
           resource_type: "image",
         });
+        await unlinkAsync(file.path);
+
         await req.body.images.push(uploadedFiles.secure_url);
       })
     );

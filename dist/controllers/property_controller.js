@@ -19,13 +19,18 @@ const cloudinary_1 = __importDefault(require("cloudinary"));
 const file_upload_1 = require("../utils/file_upload");
 const global_error_1 = require("../utils/global_error");
 const api_features_1 = require("../services/api_features");
+const fs_1 = __importDefault(require("fs"));
+const util_1 = require("util");
 const cloud = cloudinary_1.default.v2;
+const unlinkAsync = (0, util_1.promisify)(fs_1.default.unlink);
 exports.createProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     cloud.config({
         cloud_name: process.env.CLOUD_NAME,
         api_key: process.env.CLOUDINARY_KEY,
         api_secret: process.env.CLOUDINARY_SECRET,
     });
+    //@ts-ignore
+    req.body.addedBy = req.user._id;
     let uploadedFiles = [];
     req.body.images = [];
     yield Promise.all(
@@ -35,6 +40,7 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
             folder: "Clarestate",
             resource_type: "image",
         });
+        yield unlinkAsync(file.path);
         yield req.body.images.push(uploadedFiles.secure_url);
     })));
     const property = yield property_model_1.default.create(req.body);
