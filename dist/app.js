@@ -62,7 +62,7 @@ app.use((req, res, next) => {
     next();
 });
 const limiter = (0, express_rate_limit_1.default)({
-    max: 100,
+    max: 200,
     windowMs: 60 * 60 * 1000,
     message: "Too many requests from this IP. Please try again in an hour.",
 });

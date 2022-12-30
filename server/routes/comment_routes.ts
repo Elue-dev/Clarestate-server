@@ -10,14 +10,12 @@ import { requireAuth, restrictTo } from "../middlewares/auth_middleware";
 
 const router = Router({ mergeParams: true });
 
-router.use(requireAuth);
-
-router.route("/").get(restrictTo("admin"), getAllComments).post(createComment);
+router.route("/").get(getAllComments).post(requireAuth, createComment);
 
 router
   .route("/:commentID")
   .get(getSingleComment)
-  .patch(updateComment)
-  .delete(deleteComment);
+  .patch(requireAuth, updateComment)
+  .delete(requireAuth, deleteComment);
 
 export default router;

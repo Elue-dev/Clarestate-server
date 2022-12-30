@@ -88,6 +88,7 @@ exports.updateReview = (0, handle_async_1.default)((req, res, next) => __awaiter
 exports.deleteReview = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { reviewID } = req.params;
     const review = yield reviews_model_1.default.findById(reviewID);
+    console.log(review);
     if (!review) {
         return next(new global_error_1.GlobalError("Review not found", 404));
     }

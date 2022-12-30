@@ -116,6 +116,8 @@ export const deleteReview = handleAsync(
 
     const review = await Review.findById(reviewID);
 
+    console.log(review);
+
     if (!review) {
       return next(new GlobalError("Review not found", 404));
     }
