@@ -51,7 +51,6 @@ reviewSchema.pre(/^find/, function (next) {
 });
 reviewSchema.statics.calcAverageRatings = function (propertyID) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(propertyID);
         const ratingStats = yield this.aggregate([
             {
                 $match: { property: propertyID },
@@ -64,7 +63,6 @@ reviewSchema.statics.calcAverageRatings = function (propertyID) {
                 },
             },
         ]);
-        console.log(ratingStats);
         if (ratingStats.length > 0) {
             yield property_model_1.default.findByIdAndUpdate(propertyID, {
                 ratingsQuantity: ratingStats[0].nRating,
@@ -90,7 +88,6 @@ reviewSchema.pre(/^findByIdAnd/, function (next) {
         //@ts-ignore
         this.rev = yield this.findOne();
         //@ts-ignore
-        console.log(this.rev);
         next();
     });
 });

@@ -260,7 +260,7 @@ export const forgotPassword = handleAsync(
       expiresAt: Date.now() + 10 * 60 * 1000,
     }).save();
 
-    const resetUrl = `${process.env.clientUrl}/forgot-password/${resetToken}`;
+    const resetUrl = `${process.env.CLIENT_URL}/forgot-password/${resetToken}`;
 
     const subject = `Password Reset Request`;
     const send_to = email;
@@ -328,7 +328,7 @@ export const resetPassword = handleAsync(
     const userAgent = parser(req.headers["user-agent"]);
 
     const browser = userAgent.browser.name || "Not detected";
-    const OS = `${userAgent.os.name || "Not detected"}(${
+    const OS = `${userAgent.os.name || "Not detected"} (${
       userAgent.os.version || "Not detected"
     })`;
 
@@ -420,7 +420,7 @@ export const updatePassword = handleAsync(
       sendEmail({ subject, body, send_to, sent_from, reply_to });
       res.status(200).json({
         status: "success",
-        message: "Password successfully changed!",
+        message: "Password successfully changed. Please log in again",
       });
     } catch (error) {
       res.status(500).json({

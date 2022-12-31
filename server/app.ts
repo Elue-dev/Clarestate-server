@@ -17,20 +17,33 @@ import commentRouter from "./routes/comment_routes";
 import contactRouter from "./routes/contact_route";
 import path from "path";
 import * as redis from "redis";
+import os from "os";
 
 const app = express();
 
-const redisURL = process.env.REDIS_PORT || 6379;
+// const redisURL = process.env.REDIS_PORT || 6379;
+// //@ts-ignore
+// const redisClient = redis.createClient(redisURL);
+
+// redisClient.connect();
+
+// export { redisClient };
+
 //@ts-ignore
-const redisClient = redis.createClient(redisURL);
-
-redisClient.connect();
-
-export { redisClient };
+process.env.UV_THREADPOOL_SIZE = os.cpus().length;
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://127.0.0.1:5173",
+      "https://clarestate.netlify.app",
+      process.env.CLIENT_URL as string,
+    ],
+    credentials: true,
+  })
+);
 
 app.use(express.json({ limit: "10kb" }));
 
@@ -47,12 +60,12 @@ app.use((req, res, next) => {
 });
 
 const limiter = rateLimit({
-  max: 200,
+  max: 900,
   windowMs: 60 * 60 * 1000,
   message: "Too many requests from this IP. Please try again in an hour.",
 });
 
-app.use("/api", limiter);
+// app.use("/api", limiter);
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));

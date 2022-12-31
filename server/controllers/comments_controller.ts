@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import handleAsync from "../utils/handle_async";
 import { GlobalError } from "../utils/global_error";
 import Comment from "../models/schemas/comments_model";
-import { redisClient } from "../app";
 
 export const createComment = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {

@@ -44,8 +44,6 @@ reviewSchema.pre(/^find/, function (next) {
 });
 
 reviewSchema.statics.calcAverageRatings = async function (propertyID) {
-  console.log(propertyID);
-
   const ratingStats = await this.aggregate([
     {
       $match: { property: propertyID },
@@ -58,8 +56,6 @@ reviewSchema.statics.calcAverageRatings = async function (propertyID) {
       },
     },
   ]);
-
-  console.log(ratingStats);
 
   if (ratingStats.length > 0) {
     await Property.findByIdAndUpdate(propertyID, {
@@ -83,7 +79,6 @@ reviewSchema.pre(/^findByIdAnd/, async function (next) {
   //@ts-ignore
   this.rev = await this.findOne();
   //@ts-ignore
-  console.log(this.rev);
 
   next();
 });

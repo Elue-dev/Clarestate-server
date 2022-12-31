@@ -210,7 +210,7 @@ exports.forgotPassword = (0, handle_async_1.default)((req, res, next) => __await
         createdAt: Date.now(),
         expiresAt: Date.now() + 10 * 60 * 1000,
     }).save();
-    const resetUrl = `${process.env.clientUrl}/forgot-password/${resetToken}`;
+    const resetUrl = `${process.env.CLIENT_URL}/forgot-password/${resetToken}`;
     const subject = `Password Reset Request`;
     const send_to = email;
     const sent_from = process.env.EMAIL_USER;
@@ -260,7 +260,7 @@ exports.resetPassword = (0, handle_async_1.default)((req, res, next) => __awaite
     yield token_model_1.default.deleteOne({ token: hashedToken });
     const userAgent = (0, ua_parser_js_1.default)(req.headers["user-agent"]);
     const browser = userAgent.browser.name || "Not detected";
-    const OS = `${userAgent.os.name || "Not detected"}(${userAgent.os.version || "Not detected"})`;
+    const OS = `${userAgent.os.name || "Not detected"} (${userAgent.os.version || "Not detected"})`;
     const subject = `${user === null || user === void 0 ? void 0 : user.first_name}, Your password was successfully reset`;
     const send_to = user === null || user === void 0 ? void 0 : user.email;
     const sent_from = process.env.EMAIL_USER;
@@ -326,7 +326,7 @@ exports.updatePassword = (0, handle_async_1.default)((req, res, next) => __await
         (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
         res.status(200).json({
             status: "success",
-            message: "Password successfully changed!",
+            message: "Password successfully changed. Please log in again",
         });
     }
     catch (error) {
