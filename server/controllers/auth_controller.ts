@@ -260,7 +260,7 @@ export const forgotPassword = handleAsync(
       expiresAt: Date.now() + 10 * 60 * 1000,
     }).save();
 
-    const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+    const resetUrl = `${process.env.CLIENT_URL}/auth/reset-password/${resetToken}`;
 
     const subject = `Password Reset Request`;
     const send_to = email;
