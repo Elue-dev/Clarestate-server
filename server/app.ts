@@ -37,6 +37,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(
   cors({
     origin: [
+      "http://127.0.0.1:5174",
       "http://127.0.0.1:5173",
       "https://clarestate.netlify.app",
       process.env.CLIENT_URL as string,

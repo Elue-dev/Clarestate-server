@@ -32,6 +32,7 @@ process.env.UV_THREADPOOL_SIZE = os_1.default.cpus().length;
 app.use("/uploads", express_1.default.static(path_1.default.join(__dirname, "uploads")));
 app.use((0, cors_1.default)({
     origin: [
+        "http://127.0.0.1:5174",
         "http://127.0.0.1:5173",
         "https://clarestate.netlify.app",
         process.env.CLIENT_URL,
