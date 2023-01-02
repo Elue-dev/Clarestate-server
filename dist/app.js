@@ -30,7 +30,7 @@ const app = (0, express_1.default)();
 //@ts-ignore
 process.env.UV_THREADPOOL_SIZE = os_1.default.cpus().length;
 app.use(express_1.default.static(path_1.default.join(__dirname, "public")));
-app.use(express_1.default.static(path_1.default.join(__dirname, "uploads")));
+app.use(express_1.default.static(path_1.default.join(__dirname, "server/uploads")));
 app.use((0, cors_1.default)({
     origin: [
         "http://127.0.0.1:5174",

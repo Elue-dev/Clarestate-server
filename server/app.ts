@@ -33,7 +33,7 @@ const app = express();
 process.env.UV_THREADPOOL_SIZE = os.cpus().length;
 
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.static(path.join(__dirname, "uploads")));
+app.use(express.static(path.join(__dirname, "server/uploads")));
 
 app.use(
   cors({
