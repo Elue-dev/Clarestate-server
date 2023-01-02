@@ -29,7 +29,7 @@ const app = (0, express_1.default)();
 // export { redisClient };
 //@ts-ignore
 process.env.UV_THREADPOOL_SIZE = os_1.default.cpus().length;
-app.use("/uploads", express_1.default.static(path_1.default.join(__dirname, "uploads")));
+app.use("/uploads", express_1.default.static(path_1.default.join(__dirname, "dist/uploads")));
 app.use((0, cors_1.default)({
     origin: [
         "http://127.0.0.1:5174",
@@ -41,7 +41,6 @@ app.use((0, cors_1.default)({
 }));
 app.use(express_1.default.json({ limit: "10kb" }));
 app.use(express_1.default.urlencoded({ extended: true }));
-app.use("/uploads", express_1.default.static(path_1.default.join(__dirname, "uploads")));
 app.use((0, cookie_parser_1.default)());
 app.use((0, xss_clean_1.default)());
 app.use((0, express_mongo_sanitize_1.default)());

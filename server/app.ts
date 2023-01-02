@@ -32,7 +32,7 @@ const app = express();
 //@ts-ignore
 process.env.UV_THREADPOOL_SIZE = os.cpus().length;
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "dist/uploads")));
 
 app.use(
   cors({
@@ -49,8 +49,6 @@ app.use(
 app.use(express.json({ limit: "10kb" }));
 
 app.use(express.urlencoded({ extended: true }));
-
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(cookies());
 
