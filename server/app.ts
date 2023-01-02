@@ -50,6 +50,8 @@ app.use(express.json({ limit: "10kb" }));
 
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 app.use(cookies());
 
 app.use(xss());

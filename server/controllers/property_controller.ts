@@ -34,7 +34,8 @@ export const createProperty = handleAsync(
           folder: "Clarestate",
           resource_type: "image",
         });
-        await unlinkAsync(file.path);
+
+        // await unlinkAsync(file.path);
 
         await req.body.images.push(uploadedFiles.secure_url);
       })
