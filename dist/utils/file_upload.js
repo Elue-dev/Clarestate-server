@@ -8,7 +8,7 @@ const multer_1 = __importDefault(require("multer"));
 const global_error_1 = require("./global_error");
 const storage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "dist/uploads");
+        cb(null, "server/uploads");
     },
     filename: function (req, file, cb) {
         cb(null, new Date().toISOString().replace(/:/g, "-") + "-" + file.originalname);
