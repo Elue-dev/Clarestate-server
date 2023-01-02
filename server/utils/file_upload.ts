@@ -4,7 +4,7 @@ import { GlobalError } from "./global_error";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "server/uploads");
+    cb(null, "dist/uploads");
   },
   filename: function (req, file, cb) {
     cb(

@@ -40,7 +40,7 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
             folder: "Clarestate",
             resource_type: "image",
         });
-        // await unlinkAsync(file.path);
+        yield unlinkAsync(file.path);
         yield req.body.images.push(uploadedFiles.secure_url);
     })));
     const property = yield property_model_1.default.create(req.body);
