@@ -16,8 +16,9 @@ export const createProperty = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     cloud.config({
       cloud_name: process.env.CLOUD_NAME as string,
-      api_key: process.env.CLOUDINARY_KEY as string,
+      api_key: process.env.CLOUDINARY_KEY,
       api_secret: process.env.CLOUDINARY_SECRET as string,
+      secure: true,
     });
 
     //@ts-ignore

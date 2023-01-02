@@ -28,6 +28,7 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
         cloud_name: process.env.CLOUD_NAME,
         api_key: process.env.CLOUDINARY_KEY,
         api_secret: process.env.CLOUDINARY_SECRET,
+        secure: true,
     });
     //@ts-ignore
     req.body.addedBy = req.user._id;
