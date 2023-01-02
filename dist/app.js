@@ -29,7 +29,8 @@ const app = (0, express_1.default)();
 // export { redisClient };
 //@ts-ignore
 process.env.UV_THREADPOOL_SIZE = os_1.default.cpus().length;
-app.use("/uploads", express_1.default.static(path_1.default.join(__dirname, "dist/uploads")));
+app.use(express_1.default.static(path_1.default.join(__dirname, "public")));
+app.use(express_1.default.static(path_1.default.join(__dirname, "uploads")));
 app.use((0, cors_1.default)({
     origin: [
         "http://127.0.0.1:5174",
