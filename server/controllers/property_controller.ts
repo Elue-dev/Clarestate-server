@@ -1,23 +1,20 @@
 import { Request, Response, NextFunction } from "express";
+import { v2 as cloudinary } from "cloudinary";
 import Property from "../models/schemas/property_model";
 import handleAsync from "../utils/handle_async";
-import cloudinary from "cloudinary";
-import { upload } from "../utils/file_upload";
-import { GlobalError } from "../utils/global_error";
-import { APIFeatures } from "../services/api_features";
 import fs from "fs";
 import { promisify } from "util";
-
-const cloud = cloudinary.v2;
+import { GlobalError } from "../utils/global_error";
+import { upload } from "../utils/file_upload";
 
 const unlinkAsync = promisify(fs.unlink);
 
 export const createProperty = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    cloud.config({
-      cloud_name: process.env.CLOUD_NAME as string,
+    cloudinary.config({
+      cloud_name: process.env.CLOUD_NAME,
       api_key: process.env.CLOUDINARY_KEY,
-      api_secret: process.env.CLOUDINARY_SECRET as string,
+      api_secret: process.env.CLOUDINARY_SECRET,
       secure: true,
     });
 
@@ -31,7 +28,7 @@ export const createProperty = handleAsync(
     await Promise.all(
       // @ts-ignore
       req.files.map(async (file: any) => {
-        uploadedFiles = await cloud.uploader.upload(file.path, {
+        uploadedFiles = await cloudinary.uploader.upload(file.path, {
           folder: "Clarestate",
           resource_type: "image",
         });

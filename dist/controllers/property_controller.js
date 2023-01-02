@@ -13,18 +13,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.uploadProperyPhotos = exports.deleteProperty = exports.updateProperty = exports.getSingleProperty = exports.getAllProperties = exports.createProperty = void 0;
+const cloudinary_1 = require("cloudinary");
 const property_model_1 = __importDefault(require("../models/schemas/property_model"));
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
-const cloudinary_1 = __importDefault(require("cloudinary"));
-const file_upload_1 = require("../utils/file_upload");
-const global_error_1 = require("../utils/global_error");
-const api_features_1 = require("../services/api_features");
 const fs_1 = __importDefault(require("fs"));
 const util_1 = require("util");
-const cloud = cloudinary_1.default.v2;
+const global_error_1 = require("../utils/global_error");
+const file_upload_1 = require("../utils/file_upload");
 const unlinkAsync = (0, util_1.promisify)(fs_1.default.unlink);
 exports.createProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    cloud.config({
+    cloudinary_1.v2.config({
         cloud_name: process.env.CLOUD_NAME,
         api_key: process.env.CLOUDINARY_KEY,
         api_secret: process.env.CLOUDINARY_SECRET,
@@ -37,7 +35,7 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
     yield Promise.all(
     // @ts-ignore
     req.files.map((file) => __awaiter(void 0, void 0, void 0, function* () {
-        uploadedFiles = yield cloud.uploader.upload(file.path, {
+        uploadedFiles = yield cloudinary_1.v2.uploader.upload(file.path, {
             folder: "Clarestate",
             resource_type: "image",
         });
@@ -53,7 +51,7 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
 }));
 exports.getAllProperties = (0, handle_async_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
-    const features = new api_features_1.APIFeatures(property_model_1.default.find(), req.query)
+    const features = new APIFeatures(property_model_1.default.find(), req.query)
         .filter()
         .sort()
         .limitFields();
