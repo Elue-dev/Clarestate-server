@@ -1,12 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-// import { redisClient } from "../app";
 import Property from "../models/schemas/property_model";
 import User from "../models/schemas/user_model";
-// import { PropertyTypes } from "../models/types/property_types";
 import sendEmail from "../services/email_service";
 import { GlobalError } from "../utils/global_error";
 import handleAsync from "../utils/handle_async";
-import { deleteAccount } from "../views/delete_account_email";
 
 export const getAllUsers = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {

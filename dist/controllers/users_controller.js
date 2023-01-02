@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUser = exports.getLoggedInUser = exports.updateUser = exports.getUserProperties = exports.getSingleUser = exports.getAllUsers = void 0;
-// import { redisClient } from "../app";
 const property_model_1 = __importDefault(require("../models/schemas/property_model"));
 const user_model_1 = __importDefault(require("../models/schemas/user_model"));
 const global_error_1 = require("../utils/global_error");
