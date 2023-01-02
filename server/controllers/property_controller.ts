@@ -44,6 +44,7 @@ export const createProperty = handleAsync(
 
     res.status(201).json({
       status: "success",
+      message: "Property added successfully",
       property,
     });
   }
@@ -89,6 +90,8 @@ export const getSingleProperty = handleAsync(
 export const updateProperty = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { propertyID } = req.params;
+
+    console.log(req.body);
 
     if (req.body.id || req.body._id) {
       return next(new GlobalError("property ID cannot be modified", 404));

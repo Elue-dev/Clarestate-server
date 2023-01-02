@@ -40,6 +40,7 @@ app.use((0, cors_1.default)({
     credentials: true,
 }));
 app.use(express_1.default.json({ limit: "10kb" }));
+app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
 app.use((0, xss_clean_1.default)());
 app.use((0, express_mongo_sanitize_1.default)());

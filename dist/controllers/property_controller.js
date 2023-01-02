@@ -46,6 +46,7 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
     const property = yield property_model_1.default.create(req.body);
     res.status(201).json({
         status: "success",
+        message: "Property added successfully",
         property,
     });
 }));
@@ -77,6 +78,7 @@ exports.getSingleProperty = (0, handle_async_1.default)((req, res, next) => __aw
 }));
 exports.updateProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { propertyID } = req.params;
+    console.log(req.body);
     if (req.body.id || req.body._id) {
         return next(new global_error_1.GlobalError("property ID cannot be modified", 404));
     }
