@@ -20,6 +20,7 @@ const fs_1 = __importDefault(require("fs"));
 const util_1 = require("util");
 const global_error_1 = require("../utils/global_error");
 const file_upload_1 = require("../utils/file_upload");
+const api_features_1 = require("../services/api_features");
 const unlinkAsync = (0, util_1.promisify)(fs_1.default.unlink);
 exports.createProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     cloudinary_1.v2.config({
@@ -51,7 +52,7 @@ exports.createProperty = (0, handle_async_1.default)((req, res, next) => __await
 }));
 exports.getAllProperties = (0, handle_async_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
-    const features = new APIFeatures(property_model_1.default.find(), req.query)
+    const features = new api_features_1.APIFeatures(property_model_1.default.find(), req.query)
         .filter()
         .sort()
         .limitFields();

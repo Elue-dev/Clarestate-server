@@ -6,6 +6,7 @@ import fs from "fs";
 import { promisify } from "util";
 import { GlobalError } from "../utils/global_error";
 import { upload } from "../utils/file_upload";
+import { APIFeatures } from "../services/api_features";
 
 const unlinkAsync = promisify(fs.unlink);
 
