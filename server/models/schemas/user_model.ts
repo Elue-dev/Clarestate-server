@@ -24,11 +24,11 @@ const userSchema = new mongoose.Schema(
     photo: {
       type: String,
       required: [true, "Please add a photo"],
-      default: "https://i.ibb.co/4pDNDk1/avatar.png",
+      default: "https://a0.muscache.com/defaults/user_pic-50x50.png?v=3",
     },
     phone: {
       type: String,
-      default: "+234",
+      default: "",
     },
     bio: {
       type: String,

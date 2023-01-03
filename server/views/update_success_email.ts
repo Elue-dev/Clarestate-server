@@ -106,7 +106,7 @@ export const updateSuccess = ({ username, browser, OS }: resetSuccessType) => {
                           >
                             Your Clarestate password has just been changed. If
                             this was not you, be sure to
-                            <b>reset your password</b> right away
+                            <b>contact us</b> right away
                           </p>
                           <br />
                         </span>

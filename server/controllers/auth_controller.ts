@@ -26,10 +26,14 @@ export const signup = handleAsync(
       return next(new GlobalError("Please enter a valid email address", 400));
     }
 
-    const userExists = await User.findOne({ email });
+    const emailExists = await User.findOne({ email });
+    const phoneExists = await User.findOne({ phone });
 
-    if (userExists) {
+    if (emailExists) {
       return next(new GlobalError("Email already in use", 400));
+    }
+    if (phoneExists) {
+      return next(new GlobalError("Phone number already in use", 400));
     }
 
     const code = Math.floor(100000 + Math.random() * 900000);
