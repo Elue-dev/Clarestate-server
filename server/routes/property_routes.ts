@@ -25,9 +25,6 @@ router.get("/:slug", getSingleProperty);
 
 router.use(requireAuth);
 
-router
-  .route("/:propertyID")
-  .patch(restrictTo("admin"), updateProperty)
-  .delete(deleteProperty);
+router.route("/:propertyID").patch(updateProperty).delete(deleteProperty);
 
 export default router;

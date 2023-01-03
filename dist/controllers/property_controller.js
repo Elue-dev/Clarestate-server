@@ -77,22 +77,31 @@ exports.getSingleProperty = (0, handle_async_1.default)((req, res, next) => __aw
     });
 }));
 exports.updateProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const { propertyID } = req.params;
-    console.log(req.body);
     if (req.body.id || req.body._id) {
         return next(new global_error_1.GlobalError("property ID cannot be modified", 404));
     }
-    const property = yield property_model_1.default.findByIdAndUpdate(propertyID, req.body, {
+    const property = yield property_model_1.default.findById(propertyID);
+    if (
+    //@ts-ignore
+    ((_a = property.addedBy) === null || _a === void 0 ? void 0 : _a._id.toString()) !== req.user._id.toString() &&
+        //@ts-ignore
+        req.user.role !== "admin") {
+        console.log("in here");
+        return next(new global_error_1.GlobalError("You can only update properties you added", 401));
+    }
+    const updatedProperty = yield property_model_1.default.findByIdAndUpdate(propertyID, req.body, {
         new: true,
         runValidators: true,
     });
-    if (!property) {
+    if (!updatedProperty) {
         return next(new global_error_1.GlobalError("Property not found", 404));
     }
     res.status(200).json({
         status: "success",
         message: "Property updated successfully",
-        property,
+        updatedProperty,
     });
 }));
 exports.deleteProperty = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -104,8 +113,11 @@ exports.deleteProperty = (0, handle_async_1.default)((req, res, next) => __await
     if (!property) {
         return next(new global_error_1.GlobalError("Property not found", 404));
     }
+    if (
     //@ts-ignore
-    if (property.addedBy !== req.user._id && req.user.role !== "admin") {
+    property.addedBy._id.toString() !== req.user._id.toString() &&
+        //@ts-ignore
+        req.user.role !== "admin") {
         return next(new global_error_1.GlobalError("You can only delete properties you added", 401));
     }
     yield property_model_1.default.findByIdAndDelete(propertyID);
@@ -114,4 +126,4 @@ exports.deleteProperty = (0, handle_async_1.default)((req, res, next) => __await
         message: "Property deleted successfully",
     });
 }));
-exports.uploadProperyPhotos = file_upload_1.upload.array("images", 6);
+exports.uploadProperyPhotos = file_upload_1.upload.array("images");

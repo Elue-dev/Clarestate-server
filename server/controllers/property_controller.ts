@@ -91,25 +91,41 @@ export const updateProperty = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { propertyID } = req.params;
 
-    console.log(req.body);
-
     if (req.body.id || req.body._id) {
       return next(new GlobalError("property ID cannot be modified", 404));
     }
 
-    const property = await Property.findByIdAndUpdate(propertyID, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const property = await Property.findById(propertyID);
+    if (
+      //@ts-ignore
+      property.addedBy?._id.toString() !== req.user._id.toString() &&
+      //@ts-ignore
+      req.user.role !== "admin"
+    ) {
+      console.log("in here");
 
-    if (!property) {
+      return next(
+        new GlobalError("You can only update properties you added", 401)
+      );
+    }
+
+    const updatedProperty = await Property.findByIdAndUpdate(
+      propertyID,
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedProperty) {
       return next(new GlobalError("Property not found", 404));
     }
 
     res.status(200).json({
       status: "success",
       message: "Property updated successfully",
-      property,
+      updatedProperty,
     });
   }
 );
@@ -128,8 +144,13 @@ export const deleteProperty = handleAsync(
       return next(new GlobalError("Property not found", 404));
     }
 
-    //@ts-ignore
-    if (property.addedBy !== req.user._id && req.user.role !== "admin") {
+    if (
+      //@ts-ignore
+      property.addedBy._id.toString() !== req.user._id.toString() &&
+      //@ts-ignore
+
+      req.user.role !== "admin"
+    ) {
       return next(
         new GlobalError("You can only delete properties you added", 401)
       );
@@ -144,4 +165,4 @@ export const deleteProperty = handleAsync(
   }
 );
 
-export const uploadProperyPhotos = upload.array("images", 6);
+export const uploadProperyPhotos = upload.array("images");

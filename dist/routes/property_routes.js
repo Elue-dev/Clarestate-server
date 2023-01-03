@@ -17,8 +17,5 @@ router
     .post(auth_middleware_1.requireAuth, property_controller_1.uploadProperyPhotos, property_controller_1.createProperty);
 router.get("/:slug", property_controller_1.getSingleProperty);
 router.use(auth_middleware_1.requireAuth);
-router
-    .route("/:propertyID")
-    .patch((0, auth_middleware_1.restrictTo)("admin"), property_controller_1.updateProperty)
-    .delete(property_controller_1.deleteProperty);
+router.route("/:propertyID").patch(property_controller_1.updateProperty).delete(property_controller_1.deleteProperty);
 exports.default = router;
