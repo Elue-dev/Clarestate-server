@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateSuccess = void 0;
-const updateSuccess = ({ username, browser, OS }) => {
+const updateSuccess = ({ username, browser, OS, resetUrl, }) => {
     return `
               
   <!DOCTYPE html>
@@ -107,7 +107,7 @@ const updateSuccess = ({ username, browser, OS }) => {
                           >
                             Your Clarestate password has just been changed. If
                             this was not you, be sure to
-                            <b>contact us</b> right away
+                            <a href='${resetUrl}'>reset your password</a> right away.
                           </p>
                           <br />
                         </span>

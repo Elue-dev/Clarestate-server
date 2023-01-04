@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.passwordResetEmail = void 0;
-const passwordResetEmail = ({ email, username, token, url, }) => {
+const passwordResetEmail = ({ username, token, url, }) => {
     return `
             
   <!DOCTYPE html>
 <html lang="en-US">
   <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
-    <title>Email Verification</title>
-    <meta name="description" content="Email Verification." />
+    <title>Password Reset</title>
+    <meta name="description" content="Password Reset." />
     <style type="text/css">
       a:hover {
         text-decoration: underline !important;

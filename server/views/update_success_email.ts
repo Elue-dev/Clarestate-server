@@ -4,7 +4,7 @@ export const updateSuccess = ({
   username,
   browser,
   OS,
-  url,
+  resetUrl,
 }: resetSuccessType) => {
   return `
               
@@ -111,7 +111,7 @@ export const updateSuccess = ({
                           >
                             Your Clarestate password has just been changed. If
                             this was not you, be sure to
-                            <a href='${url}'>Reset your password</a> right away.
+                            <a href='${resetUrl}'>reset your password</a> right away.
                           </p>
                           <br />
                         </span>

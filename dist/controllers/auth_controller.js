@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updatePassword = exports.resetPassword = exports.forgotPassword = exports.logout = exports.login = exports.sendVerificationCode = exports.verifyCode = exports.signup = void 0;
+exports.emergencyResetPassword = exports.updatePassword = exports.resetPassword = exports.forgotPassword = exports.logout = exports.login = exports.sendVerificationCode = exports.verifyCode = exports.signup = void 0;
 const user_model_1 = __importDefault(require("../models/schemas/user_model"));
 const auth_service_1 = require("../services/auth_service");
 const email_service_1 = __importDefault(require("../services/email_service"));
@@ -203,9 +203,8 @@ exports.forgotPassword = (0, handle_async_1.default)((req, res, next) => __await
     if (!existingUser) {
         return next(new global_error_1.GlobalError("That email is not registered", 404));
     }
-    let token = yield token_model_1.default.findOne({ userId: existingUser._id });
-    if (token)
-        yield token_model_1.default.deleteOne();
+    // let token = await Token.findOne({ userId: existingUser._id });
+    // if (token) await Token.deleteOne();
     const resetToken = (0, crypto_1.randomBytes)(32).toString("hex") + existingUser._id;
     const hashedToken = (0, crypto_1.createHash)("sha256").update(resetToken).digest("hex");
     yield new token_model_1.default({
@@ -220,7 +219,6 @@ exports.forgotPassword = (0, handle_async_1.default)((req, res, next) => __await
     const sent_from = process.env.EMAIL_USER;
     const reply_to = process.env.REPLY_TO;
     const body = (0, reset_email_1.passwordResetEmail)({
-        email,
         username: existingUser.first_name,
         token: resetToken,
         url: resetUrl,
@@ -229,7 +227,8 @@ exports.forgotPassword = (0, handle_async_1.default)((req, res, next) => __await
         (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
         res.status(200).json({
             status: "success",
-            message: `An email has been sent to ${email} to reset your password`,
+            message: `An email has been sent to ${email} with instructions
+        to reset your password`,
         });
     }
     catch (error) {
@@ -256,7 +255,11 @@ exports.resetPassword = (0, handle_async_1.default)((req, res, next) => __awaite
     if (!existingToken) {
         return next(new global_error_1.GlobalError("Invalid or expired token", 400));
     }
-    const user = yield user_model_1.default.findOne({ _id: existingToken.userId });
+    const user = yield user_model_1.default.findOne({ _id: existingToken.userId }).select("+password");
+    //@ts-ignore
+    if (yield user.correctPassword(newPassword, user.password)) {
+        return next(new global_error_1.GlobalError("To protect your account, please choose a new password different from your old password", 400));
+    }
     //@ts-ignore
     user.password = newPassword;
     //@ts-ignore
@@ -318,12 +321,14 @@ exports.updatePassword = (0, handle_async_1.default)((req, res, next) => __await
     const send_to = user === null || user === void 0 ? void 0 : user.email;
     const sent_from = process.env.EMAIL_USER;
     const reply_to = process.env.REPLY_TO;
+    const resetUrl = `${process.env.CLIENT_URL}/auth/emergency-reset/${user === null || user === void 0 ? void 0 : user._id}`;
     const body = (0, update_success_email_1.updateSuccess)({
         //@ts-ignore
         username: user === null || user === void 0 ? void 0 : user.last_name,
         //@ts-ignore
         browser,
         OS,
+        resetUrl,
     });
     try {
         //@ts-ignore
@@ -331,6 +336,49 @@ exports.updatePassword = (0, handle_async_1.default)((req, res, next) => __await
         res.status(200).json({
             status: "success",
             message: "Password successfully changed. Please log in again",
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            status: "fail",
+            message: `Email not sent. Please try again.`,
+        });
+    }
+}));
+exports.emergencyResetPassword = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.body;
+    const { userID } = req.params;
+    const user = yield user_model_1.default.findOne({ email });
+    const userId = yield user_model_1.default.findById(userID);
+    if (!user) {
+        return next(new global_error_1.GlobalError("User not found", 404));
+    }
+    if (!userId) {
+        return next(new global_error_1.GlobalError("This token is meant for another user", 404));
+    }
+    const resetToken = (0, crypto_1.randomBytes)(32).toString("hex") + user._id;
+    const hashedToken = (0, crypto_1.createHash)("sha256").update(resetToken).digest("hex");
+    yield new token_model_1.default({
+        userId: user._id,
+        token: hashedToken,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 10 * 60 * 1000,
+    }).save();
+    const resetUrl = `${process.env.CLIENT_URL}/auth/reset-password/${resetToken}`;
+    const subject = `Password Reset Request`;
+    const send_to = user.email;
+    const sent_from = process.env.EMAIL_USER;
+    const reply_to = process.env.REPLY_TO;
+    const body = (0, reset_email_1.passwordResetEmail)({
+        username: user.first_name,
+        token: resetToken,
+        url: resetUrl,
+    });
+    try {
+        (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
+        res.status(200).json({
+            status: "success",
+            message: `An email has been sent to ${user.email} with instructions to reset your password`,
         });
     }
     catch (error) {

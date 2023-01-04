@@ -23,10 +23,6 @@ router.get("/logout", logout);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 router.put("/update-password", requireAuth, updatePassword);
-router.put(
-  "/emergency-password-reset/:userEmail",
-  requireAuth,
-  emergencyResetPassword
-);
+router.put("/emergency-password-reset/:userID", emergencyResetPassword);
 
 export default router;

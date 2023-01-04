@@ -1,7 +1,6 @@
 import { passwordResetType } from "../models/types/email_types";
 
 export const passwordResetEmail = ({
-  email,
   username,
   token,
   url,
@@ -12,8 +11,8 @@ export const passwordResetEmail = ({
 <html lang="en-US">
   <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
-    <title>Email Verification</title>
-    <meta name="description" content="Email Verification." />
+    <title>Password Reset</title>
+    <meta name="description" content="Password Reset." />
     <style type="text/css">
       a:hover {
         text-decoration: underline !important;

@@ -7,7 +7,6 @@ export interface EmailType {
 }
 
 export interface passwordResetType {
-  email: string;
   username: string;
   token: string;
   url: string;
@@ -23,4 +22,5 @@ export interface resetSuccessType {
   browser: string;
   OS: string;
   url: string;
+  resetUrl: string;
 }

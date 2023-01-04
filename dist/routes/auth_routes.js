@@ -12,4 +12,5 @@ router.get("/logout", auth_controller_1.logout);
 router.post("/forgot-password", auth_controller_1.forgotPassword);
 router.post("/reset-password/:token", auth_controller_1.resetPassword);
 router.put("/update-password", auth_middleware_1.requireAuth, auth_controller_1.updatePassword);
+router.put("/emergency-password-reset/:userID", auth_controller_1.emergencyResetPassword);
 exports.default = router;
