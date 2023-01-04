@@ -203,8 +203,6 @@ exports.forgotPassword = (0, handle_async_1.default)((req, res, next) => __await
     if (!existingUser) {
         return next(new global_error_1.GlobalError("That email is not registered", 404));
     }
-    // let token = await Token.findOne({ userId: existingUser._id });
-    // if (token) await Token.deleteOne();
     const resetToken = (0, crypto_1.randomBytes)(32).toString("hex") + existingUser._id;
     const hashedToken = (0, crypto_1.createHash)("sha256").update(resetToken).digest("hex");
     yield new token_model_1.default({
@@ -255,11 +253,7 @@ exports.resetPassword = (0, handle_async_1.default)((req, res, next) => __awaite
     if (!existingToken) {
         return next(new global_error_1.GlobalError("Invalid or expired token", 400));
     }
-    const user = yield user_model_1.default.findOne({ _id: existingToken.userId }).select("+password");
-    //@ts-ignore
-    if (yield user.correctPassword(newPassword, user.password)) {
-        return next(new global_error_1.GlobalError("To protect your account, please choose a new password different from your old password", 400));
-    }
+    const user = yield user_model_1.default.findOne({ _id: existingToken.userId });
     //@ts-ignore
     user.password = newPassword;
     //@ts-ignore

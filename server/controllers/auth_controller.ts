@@ -250,10 +250,6 @@ export const forgotPassword = handleAsync(
       return next(new GlobalError("That email is not registered", 404));
     }
 
-    // let token = await Token.findOne({ userId: existingUser._id });
-
-    // if (token) await Token.deleteOne();
-
     const resetToken = randomBytes(32).toString("hex") + existingUser._id;
     const hashedToken = createHash("sha256").update(resetToken).digest("hex");
 
@@ -320,19 +316,7 @@ export const resetPassword = handleAsync(
       return next(new GlobalError("Invalid or expired token", 400));
     }
 
-    const user = await User.findOne({ _id: existingToken.userId }).select(
-      "+password"
-    );
-
-    //@ts-ignore
-    if (await user.correctPassword(newPassword, user.password)) {
-      return next(
-        new GlobalError(
-          "To protect your account, please choose a new password different from your old password",
-          400
-        )
-      );
-    }
+    const user = await User.findOne({ _id: existingToken.userId });
 
     //@ts-ignore
     user.password = newPassword;
