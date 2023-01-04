@@ -1,6 +1,11 @@
 import { resetSuccessType } from "../models/types/email_types";
 
-export const updateSuccess = ({ username, browser, OS }: resetSuccessType) => {
+export const updateSuccess = ({
+  username,
+  browser,
+  OS,
+  url,
+}: resetSuccessType) => {
   return `
               
   <!DOCTYPE html>
@@ -106,7 +111,7 @@ export const updateSuccess = ({ username, browser, OS }: resetSuccessType) => {
                           >
                             Your Clarestate password has just been changed. If
                             this was not you, be sure to
-                            <b>contact us</b> right away
+                            <a href='${url}'>Reset your password</a> right away.
                           </p>
                           <br />
                         </span>

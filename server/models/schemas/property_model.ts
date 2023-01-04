@@ -18,6 +18,11 @@ const propertySchema = new mongoose.Schema(
       required: [true, "Property location is required"],
       trim: true,
     },
+    city: {
+      type: String,
+      required: [true, "Property city is required"],
+      trim: true,
+    },
     images: {
       type: [String],
       required: [true, "Images of property is required"],

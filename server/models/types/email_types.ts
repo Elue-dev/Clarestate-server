@@ -22,4 +22,5 @@ export interface resetSuccessType {
   username: string;
   browser: string;
   OS: string;
+  url: string;
 }

@@ -411,12 +411,14 @@ export const updatePassword = handleAsync(
     const send_to = user?.email;
     const sent_from = process.env.EMAIL_USER as string;
     const reply_to = process.env.REPLY_TO as string;
+    const url = `${process.env.CLIENNT_URL}/auth/reset-password/${user?.email}`;
     const body = updateSuccess({
       //@ts-ignore
       username: user?.last_name,
       //@ts-ignore
       browser,
       OS,
+      url,
     });
 
     try {
@@ -425,6 +427,65 @@ export const updatePassword = handleAsync(
       res.status(200).json({
         status: "success",
         message: "Password successfully changed. Please log in again",
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "fail",
+        message: `Email not sent. Please try again.`,
+      });
+    }
+  }
+);
+
+export const emergencyResetPassword = handleAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userEmail } = req.params;
+
+    const { email } = req.body;
+
+    if (userEmail !== email) {
+      return next(
+        new GlobalError(
+          `Unauthorized. This token is to reset the password of ${email}`,
+          400
+        )
+      );
+    }
+
+    const user = await User.findOne({ userEmail });
+
+    if (!user) {
+      return next(new GlobalError("Invalid email address", 400));
+    }
+
+    const resetToken = randomBytes(32).toString("hex") + user._id;
+    const hashedToken = createHash("sha256").update(resetToken).digest("hex");
+
+    await new Token({
+      userId: user._id,
+      token: hashedToken,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 10 * 60 * 1000,
+    }).save();
+
+    const resetUrl = `${process.env.CLIENT_URL}/auth/reset-password/${resetToken}`;
+
+    const subject = `Password Reset Request`;
+    const send_to = email;
+    const sent_from = process.env.EMAIL_USER as string;
+    const reply_to = process.env.REPLY_TO as string;
+    const body = passwordResetEmail({
+      email,
+      username: user.first_name,
+      token: resetToken,
+      url: resetUrl,
+    });
+
+    try {
+      sendEmail({ subject, body, send_to, sent_from, reply_to });
+      res.status(200).json({
+        status: "success",
+        message: `An email has been sent to ${email} to reset your password`,
       });
     } catch (error) {
       res.status(500).json({
