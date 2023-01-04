@@ -24,3 +24,8 @@ export interface resetSuccessType {
   url: string;
   resetUrl: string;
 }
+
+export interface replyUserType {
+  username: string;
+  subject: string;
+}
