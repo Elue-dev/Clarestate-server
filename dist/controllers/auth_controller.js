@@ -163,7 +163,7 @@ exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0
         return next(new global_error_1.GlobalError("Email or phone number and password are both required", 400));
     }
     const user = yield user_model_1.default.findOne({
-        $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+        $or: [{ email: emailOrPhone.trim() }, { phone: emailOrPhone.trim() }],
     })
         .select("+password")
         .select("+userAgents");

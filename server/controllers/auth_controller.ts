@@ -193,7 +193,7 @@ export const login = handleAsync(
     }
 
     const user: any = await User.findOne({
-      $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+      $or: [{ email: emailOrPhone.trim() }, { phone: emailOrPhone.trim() }],
     })
       .select("+password")
       .select("+userAgents");

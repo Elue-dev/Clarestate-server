@@ -6,20 +6,24 @@ const userSchema = new mongoose.Schema(
     first_name: {
       type: String,
       required: [true, "First name is required"],
+      trim: true,
     },
     last_name: {
       type: String,
       required: [true, "last name is required"],
+      trim: true,
     },
     email: {
       type: String,
       required: [true, "Email is required"],
+      trim: true,
     },
     password: {
       type: String,
       required: [true, "Passsword is required"],
       select: false,
       minLength: [6, "Password must be up to 6 characters long"],
+      trim: true,
     },
     photo: {
       type: String,
@@ -29,16 +33,19 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
       default: "",
+      trim: true,
     },
     bio: {
       type: String,
       maxLength: [250, "Bio must not be more than 250 characters"],
       default: "Bio",
+      trim: true,
     },
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
+      trim: true,
     },
     verificationCode: String,
     codeExpires: Date,
