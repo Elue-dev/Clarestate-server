@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.contactUs = void 0;
+exports.contactMe = exports.contactUs = void 0;
 const handle_async_1 = __importDefault(require("../utils/handle_async"));
 const global_error_1 = require("../utils/global_error");
 const email_service_1 = __importDefault(require("../services/email_service"));
@@ -35,6 +35,26 @@ exports.contactUs = (0, handle_async_1.default)((req, res, next) => __awaiter(vo
         res.status(200).json({
             status: "success",
             message: "Email sent successfully. Thank you for contacting us",
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            status: "fail",
+            message: `Email not sent. Please try again.`,
+        });
+    }
+}));
+exports.contactMe = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { name, email, message } = req.body;
+    const subject = `Message from ${name} on Portfolio`;
+    const send_to = process.env.ADMIN;
+    const sent_from = process.env.EMAIL_USER;
+    const reply_to = email;
+    try {
+        (0, email_service_1.default)({ subject, body: message, send_to, sent_from, reply_to });
+        res.status(200).json({
+            status: "success",
+            message: "Email sent successfully. Thank you for reaching out!",
         });
     }
     catch (error) {
