@@ -36,12 +36,8 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
         return next(new global_error_1.GlobalError("Please enter a valid email address", 400));
     }
     const emailExists = yield user_model_1.default.findOne({ email });
-    const phoneExists = yield user_model_1.default.findOne({ phone });
     if (emailExists) {
         return next(new global_error_1.GlobalError("Email already in use", 400));
-    }
-    if (phoneExists) {
-        return next(new global_error_1.GlobalError("Phone number already in use", 400));
     }
     const code = Math.floor(100000 + Math.random() * 900000);
     const verificationCode = code.toString();
