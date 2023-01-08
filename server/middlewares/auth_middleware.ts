@@ -33,7 +33,19 @@ export const requireAuth = handleAsync(
     const freshUser = await User.findById(payload.id).select("-password");
 
     if (!freshUser) {
-      return next(new GlobalError("Session expired. Please Log in again", 401));
+      return next(
+        new GlobalError("The user with this token no longer exists", 401)
+      );
+    }
+
+    // @ts-ignore
+    if (freshUser.changedPasswordAfter(payload.iat)) {
+      return next(
+        new GlobalError(
+          "User recently changed password, Please log in again",
+          401
+        )
+      );
     }
 
     //@ts-ignore

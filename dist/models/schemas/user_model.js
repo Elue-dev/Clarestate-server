@@ -91,5 +91,14 @@ userSchema.methods.correctPassword = function (providedPassword, userPassword) {
         return yield (0, bcryptjs_1.compare)(providedPassword, userPassword);
     });
 };
+userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
+    if (this.passwordChangedAt) {
+        const changedTimestamp = parseInt(
+        //@ts-ignore
+        this.passwordChangedAt.getTime() / 1000, 10);
+        return JWTTimeStamp < changedTimestamp;
+    }
+    return false;
+};
 const User = mongoose_1.default.model("user", userSchema);
 exports.default = User;
