@@ -35,6 +35,7 @@ app.use((0, cors_1.default)({
     origin: [
         "http://127.0.0.1:5174",
         "http://127.0.0.1:5173",
+        "http://localhost:3000",
         "http://eluewisdom.com",
         "https://clarestate.netlify.app",
         process.env.CLIENT_URL,

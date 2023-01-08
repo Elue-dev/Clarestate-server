@@ -123,7 +123,7 @@ export const verifyCode = handleAsync(
       });
     }
 
-    createAndSendToken(user, 201, res, "verified");
+    createAndSendToken(user, 201, res, "verify");
   }
 );
 

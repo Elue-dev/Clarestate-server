@@ -111,7 +111,7 @@ exports.verifyCode = (0, handle_async_1.default)((req, res, next) => __awaiter(v
             message: `Email not sent. Please try again.`,
         });
     }
-    (0, auth_service_1.createAndSendToken)(user, 201, res, "verified");
+    (0, auth_service_1.createAndSendToken)(user, 201, res, "verify");
 }));
 exports.sendVerificationCode = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.body;
