@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const morgan_1 = __importDefault(require("morgan"));
+// import morgan from "morgan";
 const xss_clean_1 = __importDefault(require("xss-clean"));
 const helmet_1 = __importDefault(require("helmet"));
 const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize"));
@@ -58,9 +58,6 @@ const limiter = (0, express_rate_limit_1.default)({
     message: "Too many requests from this IP. Please try again in an hour.",
 });
 // app.use("/api", limiter);
-if (process.env.NODE_ENV === "development") {
-    app.use((0, morgan_1.default)("dev"));
-}
 app.use("/api/auth", auth_routes_1.default);
 app.use("/api/users", user_routes_1.default);
 app.use("/api/properties", property_routes_1.default);

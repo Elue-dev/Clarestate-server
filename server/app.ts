@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookies from "cookie-parser";
-import morgan from "morgan";
+// import morgan from "morgan";
 import xss from "xss-clean";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
@@ -73,10 +73,6 @@ const limiter = rateLimit({
 });
 
 // app.use("/api", limiter);
-
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
-}
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
