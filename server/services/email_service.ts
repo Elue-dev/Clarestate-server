@@ -31,7 +31,7 @@ const sendEmail = ({
   transporter.sendMail(options, function (err, info) {
     if (err) return console.log(err);
 
-    console.log("INFO", info);
+    // console.log("INFO", info);
   });
 };
 

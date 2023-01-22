@@ -27,8 +27,26 @@ const reset_email_1 = require("../views/reset_email");
 const reset_success_email_1 = require("../views/reset_success_email");
 const ua_parser_js_1 = __importDefault(require("ua-parser-js"));
 const update_success_email_1 = require("../views/update_success_email");
+const twilio_1 = require("twilio");
 exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
+    const client = new twilio_1.Twilio(accountSid, authToken);
     const { first_name, last_name, email, password, phone } = req.body;
+    // try {
+    //   client.messages
+    //     .create({
+    //       from: "+2348107339039",
+    //       to: "+2348107339039",
+    //       body: `Verify your email with this code 000000`,
+    //     })
+    //     .then((message: any) => {
+    //       res.send(message);
+    //       console.log(message);
+    //     });
+    // } catch (error) {
+    //   console.log(error);
+    // }
     if (!first_name || !last_name || !email || !password) {
         return next(new global_error_1.GlobalError("Please fill in all required fields", 400));
     }
@@ -52,6 +70,13 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
         verificationCode: encryptedCode,
         codeExpires: Date.now() + 60 * (60 * 1000),
     });
+    // client.messages
+    //   .create({
+    //     body: `Verify your email with this code ${verificationCode}`,
+    //     from: "+15017122661",
+    //     to: "+2348107339039",
+    //   })
+    //   .then((message: any) => console.log(message));
     const subject = "Verify Your Email";
     const send_to = email;
     const sent_from = process.env.EMAIL_USER;
@@ -176,7 +201,7 @@ exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0
     }
     yield user.save();
     //@ts-ignore
-    user === null || user === void 0 ? void 0 : user.userAgents = undefined;
+    // user?.userAgents = undefined;
     (0, auth_service_1.createAndSendToken)(user, 200, res, "login");
 }));
 exports.logout = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

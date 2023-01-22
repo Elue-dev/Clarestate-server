@@ -26,7 +26,7 @@ const sendEmail = ({ subject, body, send_to, sent_from, reply_to, }) => {
     transporter.sendMail(options, function (err, info) {
         if (err)
             return console.log(err);
-        console.log("INFO", info);
+        // console.log("INFO", info);
     });
 };
 exports.default = sendEmail;

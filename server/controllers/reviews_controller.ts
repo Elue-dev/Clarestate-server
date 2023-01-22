@@ -22,7 +22,7 @@ export const createReview = handleAsync(
       return next(
         new GlobalError(
           "Admins are not allowed to add reviews to a property",
-          401
+          403
         )
       );
     }

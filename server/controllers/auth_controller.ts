@@ -13,10 +13,31 @@ import { passwordResetEmail } from "../views/reset_email";
 import { resetSuccess } from "../views/reset_success_email";
 import parser from "ua-parser-js";
 import { updateSuccess } from "../views/update_success_email";
+import { Twilio } from "twilio";
 
 export const signup = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    const accountSid = process.env.TWILIO_ACCOUNT_SID as string;
+    const authToken = process.env.TWILIO_AUTH_TOKEN as string;
+
+    const client = new Twilio(accountSid, authToken);
+
     const { first_name, last_name, email, password, phone } = req.body;
+
+    // try {
+    //   client.messages
+    //     .create({
+    //       from: "+2348107339039",
+    //       to: "+2348107339039",
+    //       body: `Verify your email with this code 000000`,
+    //     })
+    //     .then((message: any) => {
+    //       res.send(message);
+    //       console.log(message);
+    //     });
+    // } catch (error) {
+    //   console.log(error);
+    // }
 
     if (!first_name || !last_name || !email || !password) {
       return next(new GlobalError("Please fill in all required fields", 400));
@@ -47,6 +68,14 @@ export const signup = handleAsync(
       verificationCode: encryptedCode,
       codeExpires: Date.now() + 60 * (60 * 1000),
     });
+
+    // client.messages
+    //   .create({
+    //     body: `Verify your email with this code ${verificationCode}`,
+    //     from: "+15017122661",
+    //     to: "+2348107339039",
+    //   })
+    //   .then((message: any) => console.log(message));
 
     const subject = "Verify Your Email";
     const send_to = email;
@@ -211,7 +240,7 @@ export const login = handleAsync(
     await user.save();
 
     //@ts-ignore
-    user?.userAgents = undefined;
+    // user?.userAgents = undefined;
 
     createAndSendToken(user, 200, res, "login");
   }
