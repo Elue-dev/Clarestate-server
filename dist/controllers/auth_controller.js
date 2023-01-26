@@ -27,11 +27,10 @@ const reset_email_1 = require("../views/reset_email");
 const reset_success_email_1 = require("../views/reset_success_email");
 const ua_parser_js_1 = __importDefault(require("ua-parser-js"));
 const update_success_email_1 = require("../views/update_success_email");
-const twilio_1 = require("twilio");
 exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
-    const client = new twilio_1.Twilio(accountSid, authToken);
+    // const accountSid = process.env.TWILIO_ACCOUNT_SID as string;
+    // const authToken = process.env.TWILIO_AUTH_TOKEN as string;
+    // const client = new Twilio(accountSid, authToken);
     const { first_name, last_name, email, password, phone } = req.body;
     // try {
     //   client.messages

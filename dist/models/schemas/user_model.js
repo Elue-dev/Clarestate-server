@@ -22,7 +22,7 @@ const userSchema = new mongoose_1.default.Schema({
     },
     last_name: {
         type: String,
-        required: [true, "last name is required"],
+        required: [true, "Last name is required"],
         trim: true,
     },
     email: {

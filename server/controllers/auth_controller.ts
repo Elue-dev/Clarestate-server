@@ -17,10 +17,10 @@ import { Twilio } from "twilio";
 
 export const signup = handleAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const accountSid = process.env.TWILIO_ACCOUNT_SID as string;
-    const authToken = process.env.TWILIO_AUTH_TOKEN as string;
+    // const accountSid = process.env.TWILIO_ACCOUNT_SID as string;
+    // const authToken = process.env.TWILIO_AUTH_TOKEN as string;
 
-    const client = new Twilio(accountSid, authToken);
+    // const client = new Twilio(accountSid, authToken);
 
     const { first_name, last_name, email, password, phone } = req.body;
 
