@@ -1,4 +1,4 @@
-import express from "express";
+import mongoose from "mongoose";
 import dotenv from "dotenv";
 import colors from "colors";
 import { connectDatabase } from "./config/database";
@@ -13,18 +13,28 @@ process.on("uncaughtException", (err) => {
 
 dotenv.config();
 
-connectDatabase();
+// connectDatabase();
 
 const PORT = process.env.PORT || 5000;
+const database = process.env.DATABASE;
 
-const server = app.listen(PORT, () => {
-  console.log(`server running on port ${PORT}...`);
-});
+mongoose
+  .connect(database as string)
+  .then(() => {
+    console.log(`DATABASE CONNECTED SUCCESSFULLY!`);
+    const server = app.listen(PORT, () => {
+      console.log(`server running on port ${PORT}...`);
+    });
 
-process.on("unhandledRejection", (err) => {
-  console.log(err);
-  console.log("UNHANDLED REJECTION ⛔️, Shutting down...");
-  server.close(() => {
+    process.on("unhandledRejection", (err) => {
+      console.log(err);
+      console.log("UNHANDLED REJECTION ⛔️, Shutting down...");
+      server.close(() => {
+        process.exit(1);
+      });
+    });
+  })
+  .catch((error) => {
+    console.log("MONGODB CONNECTION ERROR", error);
     process.exit(1);
   });
-});
