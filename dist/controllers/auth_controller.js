@@ -200,7 +200,7 @@ exports.login = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0
     }
     yield user.save();
     //@ts-ignore
-    // user?.userAgents = undefined;
+    user === null || user === void 0 ? void 0 : user.userAgents = undefined;
     (0, auth_service_1.createAndSendToken)(user, 200, res, "login");
 }));
 exports.logout = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

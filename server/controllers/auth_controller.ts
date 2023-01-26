@@ -240,7 +240,7 @@ export const login = handleAsync(
     await user.save();
 
     //@ts-ignore
-    // user?.userAgents = undefined;
+    user?.userAgents = undefined;
 
     createAndSendToken(user, 200, res, "login");
   }
