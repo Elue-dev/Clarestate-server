@@ -39,7 +39,7 @@ export const signup = handleAsync(
     //   console.log(error);
     // }
 
-    if (!first_name || !last_name || !email || !password) {
+    if (!first_name || !last_name || !email || !password || !phone) {
       return next(new GlobalError("Please fill in all required fields", 400));
     }
 

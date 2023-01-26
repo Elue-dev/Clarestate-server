@@ -46,7 +46,7 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
     // } catch (error) {
     //   console.log(error);
     // }
-    if (!first_name || !last_name || !email || !password) {
+    if (!first_name || !last_name || !email || !password || !phone) {
         return next(new global_error_1.GlobalError("Please fill in all required fields", 400));
     }
     if (!(0, auth_service_1.validateEmail)(email)) {
