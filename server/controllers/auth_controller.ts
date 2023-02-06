@@ -275,6 +275,14 @@ export const forgotPassword = handleAsync(
       return next(new GlobalError("That email is not registered", 404));
     }
 
+    if (existingUser.email === "guestuser@clarestate.com") {
+      return next(
+        new GlobalError(
+          "Sorry, you are not authorized to reset the guest user password",
+          401
+        )
+      );
+    }
     const resetToken = randomBytes(32).toString("hex") + existingUser._id;
     const hashedToken = createHash("sha256").update(resetToken).digest("hex");
 

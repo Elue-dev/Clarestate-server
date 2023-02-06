@@ -54,7 +54,7 @@ exports.getUserProperties = (0, handle_async_1.default)((req, res, next) => __aw
 }));
 exports.updateUser = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { userID } = req.params;
-    const { first_name, last_name, photo, email, isVerified } = req.body;
+    const { first_name, last_name, photo, isVerified } = req.body;
     const user = yield user_model_1.default.findOne({
         _id: userID,
         active: { $ne: false },
@@ -62,8 +62,12 @@ exports.updateUser = (0, handle_async_1.default)((req, res, next) => __awaiter(v
     if (!user) {
         return next(new global_error_1.GlobalError("No user found", 404));
     }
-    if (first_name === "" || last_name === "" || photo === "") {
+    if (!first_name || !last_name || !photo) {
         return next(new global_error_1.GlobalError("First name, last name and photo are all required", 401));
+    }
+    //@ts-ignore
+    if (req.user.email === "guestuser@clarestate.com") {
+        return next(new global_error_1.GlobalError("Sorry, you are not authorized to change the guest user details", 401));
     }
     if (isVerified) {
         return next(new global_error_1.GlobalError("You are not allowed to change user verification status", 401));

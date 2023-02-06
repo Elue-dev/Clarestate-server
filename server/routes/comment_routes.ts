@@ -6,7 +6,7 @@ import {
   getAllComments,
   updateComment,
 } from "../controllers/comments_controller";
-import { requireAuth, restrictTo } from "../middlewares/auth_middleware";
+import { requireAuth } from "../middlewares/auth_middleware";
 
 const router = Router({ mergeParams: true });
 

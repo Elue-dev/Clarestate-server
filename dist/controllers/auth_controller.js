@@ -223,6 +223,9 @@ exports.forgotPassword = (0, handle_async_1.default)((req, res, next) => __await
     if (!existingUser) {
         return next(new global_error_1.GlobalError("That email is not registered", 404));
     }
+    if (existingUser.email === "guestuser@clarestate.com") {
+        return next(new global_error_1.GlobalError("Sorry, you are not authorized to reset the guest user password", 401));
+    }
     const resetToken = (0, crypto_1.randomBytes)(32).toString("hex") + existingUser._id;
     const hashedToken = (0, crypto_1.createHash)("sha256").update(resetToken).digest("hex");
     yield new token_model_1.default({
