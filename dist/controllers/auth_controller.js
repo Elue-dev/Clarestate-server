@@ -320,7 +320,7 @@ exports.updatePassword = (0, handle_async_1.default)((req, res, next) => __await
     }
     //@ts-ignore
     if (user.email === "guestuser@clarestate.com") {
-        return next(new global_error_1.GlobalError("Sorry, you are not authorized to reset the guest user password", 401));
+        return next(new global_error_1.GlobalError("Sorry, you are not authorized to update the guest user password", 401));
     }
     //@ts-ignore
     if (!(yield user.correctPassword(oldPassword, user.password))) {

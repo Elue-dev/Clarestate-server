@@ -411,7 +411,7 @@ export const updatePassword = handleAsync(
     if (user.email === "guestuser@clarestate.com") {
       return next(
         new GlobalError(
-          "Sorry, you are not authorized to reset the guest user password",
+          "Sorry, you are not authorized to update the guest user password",
           401
         )
       );
