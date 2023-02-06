@@ -62,6 +62,16 @@ export const updateUser = handleAsync(
     const { userID } = req.params;
     const { first_name, last_name, photo, isVerified } = req.body;
 
+    //@ts-ignore
+    if (req.user.email === "guestuser@clarestate.com") {
+      return next(
+        new GlobalError(
+          "Sorry, you are not authorized to change the guest user details",
+          401
+        )
+      );
+    }
+
     const user = await User.findOne({
       _id: userID,
       active: { $ne: false },
@@ -74,16 +84,6 @@ export const updateUser = handleAsync(
     if (!first_name || !last_name || !photo) {
       return next(
         new GlobalError("First name, last name and photo are all required", 401)
-      );
-    }
-
-    //@ts-ignore
-    if (req.user.email === "guestuser@clarestate.com") {
-      return next(
-        new GlobalError(
-          "Sorry, you are not authorized to change the guest user details",
-          401
-        )
       );
     }
 

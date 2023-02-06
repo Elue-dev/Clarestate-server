@@ -319,6 +319,10 @@ exports.updatePassword = (0, handle_async_1.default)((req, res, next) => __await
         return next(new global_error_1.GlobalError("Please provide all 3 password credentials", 400));
     }
     //@ts-ignore
+    if (user.email === "guestuser@clarestate.com") {
+        return next(new global_error_1.GlobalError("Sorry, you are not authorized to reset the guest user password", 401));
+    }
+    //@ts-ignore
     if (!(yield user.correctPassword(oldPassword, user.password))) {
         return next(new global_error_1.GlobalError("Old password is incorrect", 400));
     }

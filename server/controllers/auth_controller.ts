@@ -283,6 +283,7 @@ export const forgotPassword = handleAsync(
         )
       );
     }
+
     const resetToken = randomBytes(32).toString("hex") + existingUser._id;
     const hashedToken = createHash("sha256").update(resetToken).digest("hex");
 
@@ -405,6 +406,17 @@ export const updatePassword = handleAsync(
         new GlobalError("Please provide all 3 password credentials", 400)
       );
     }
+
+    //@ts-ignore
+    if (user.email === "guestuser@clarestate.com") {
+      return next(
+        new GlobalError(
+          "Sorry, you are not authorized to reset the guest user password",
+          401
+        )
+      );
+    }
+
     //@ts-ignore
     if (!(await user.correctPassword(oldPassword, user.password))) {
       return next(new GlobalError("Old password is incorrect", 400));
