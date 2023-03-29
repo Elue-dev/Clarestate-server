@@ -33,9 +33,9 @@ app.use(express_1.default.static(path_1.default.join(__dirname, "public")));
 app.use(express_1.default.static(path_1.default.join(__dirname, "server/uploads")));
 app.use((0, cors_1.default)({
     origin: [
-        "http://localhost:5173",
-        "http://127.0.0.1:5174",
         "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+        "http://localhost:5176",
         "http://localhost:3000",
         "http://eluewisdom.com",
         "https://clarestate.netlify.app",

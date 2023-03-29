@@ -76,6 +76,7 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
     //     to: "+2348107339039",
     //   })
     //   .then((message: any) => console.log(message));
+    console.log("in controller!!");
     const subject = "Verify Your Email";
     const send_to = email;
     const sent_from = process.env.EMAIL_USER;
@@ -93,6 +94,7 @@ exports.signup = (0, handle_async_1.default)((req, res, next) => __awaiter(void 
         });
     }
     catch (error) {
+        console.log(error);
         res.status(500).json({
             status: "fail",
             message: `Email not sent. please try again!`,

@@ -25,31 +25,34 @@ export const requireAuth = handleAsync(
       );
     }
 
-    const payload = jwt.verify(
-      token,
-      process.env.JWT_SECRET as string
-    ) as UserPayload;
+    try {
+      const payload = jwt.verify(
+        token,
+        process.env.JWT_SECRET as string
+      ) as UserPayload;
 
-    const freshUser = await User.findById(payload.id).select("-password");
+      const freshUser = await User.findById(payload.id).select("-password");
 
-    if (!freshUser) {
-      return next(
-        new GlobalError("The user with this token no longer exists", 401)
-      );
+      if (!freshUser) {
+        return next(
+          new GlobalError("The user with this token no longer exists", 401)
+        );
+      }
+
+      // @ts-ignore
+      if (freshUser.changedPasswordAfter(payload.iat)) {
+        return next(
+          new GlobalError(
+            "User recently changed password, Please log in again",
+            401
+          )
+        );
+      }
+      //@ts-ignore
+      req.user = freshUser;
+    } catch (err) {
+      return next(new GlobalError("Session expired. Please log in again", 401));
     }
-
-    // @ts-ignore
-    if (freshUser.changedPasswordAfter(payload.iat)) {
-      return next(
-        new GlobalError(
-          "User recently changed password, Please log in again",
-          401
-        )
-      );
-    }
-
-    //@ts-ignore
-    req.user = freshUser;
 
     next();
   }

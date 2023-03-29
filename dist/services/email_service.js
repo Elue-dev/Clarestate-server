@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const sendEmail = ({ subject, body, send_to, sent_from, reply_to, }) => {
+    console.log({ env: process.env.EMAIL_HOST });
     const transporter = nodemailer_1.default.createTransport({
         host: process.env.EMAIL_HOST,
         port: 587,
@@ -26,7 +27,7 @@ const sendEmail = ({ subject, body, send_to, sent_from, reply_to, }) => {
     transporter.sendMail(options, function (err, info) {
         if (err)
             return console.log(err);
-        // console.log("INFO", info);
+        console.log("INFO", info);
     });
 };
 exports.default = sendEmail;

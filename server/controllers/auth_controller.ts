@@ -77,6 +77,8 @@ export const signup = handleAsync(
     //   })
     //   .then((message: any) => console.log(message));
 
+    console.log("in controller!!");
+
     const subject = "Verify Your Email";
     const send_to = email;
     const sent_from = process.env.EMAIL_USER as string;
@@ -94,6 +96,8 @@ export const signup = handleAsync(
         message: `A verification code has been sent to ${email}`,
       });
     } catch (error) {
+      console.log(error);
+
       res.status(500).json({
         status: "fail",
         message: `Email not sent. please try again!`,
