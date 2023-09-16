@@ -371,7 +371,7 @@ export const resetPassword = handleAsync(
     })`;
 
     const subject = `${user?.first_name}, Your password was successfully reset`;
-    const send_to = user?.email;
+    const send_to = user?.email!;
     const sent_from = process.env.EMAIL_USER as string;
     const reply_to = process.env.REPLY_TO as string;
     const body = resetSuccess({
@@ -383,7 +383,6 @@ export const resetPassword = handleAsync(
     });
 
     try {
-      //@ts-ignore
       sendEmail({ subject, body, send_to, sent_from, reply_to });
       res.status(200).json({
         status: "success",

@@ -299,7 +299,6 @@ exports.resetPassword = (0, handle_async_1.default)((req, res, next) => __awaite
         OS,
     });
     try {
-        //@ts-ignore
         (0, email_service_1.default)({ subject, body, send_to, sent_from, reply_to });
         res.status(200).json({
             status: "success",

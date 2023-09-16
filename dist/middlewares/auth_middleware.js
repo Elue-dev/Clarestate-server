@@ -29,17 +29,22 @@ exports.requireAuth = (0, handle_async_1.default)((req, res, next) => __awaiter(
     if (!token) {
         return next(new global_error_1.GlobalError("You are not logged in. Please log in to get access", 401));
     }
-    const payload = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-    const freshUser = yield user_model_1.default.findById(payload.id).select("-password");
-    if (!freshUser) {
-        return next(new global_error_1.GlobalError("The user with this token no longer exists", 401));
+    try {
+        const payload = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        const freshUser = yield user_model_1.default.findById(payload.id).select("-password");
+        if (!freshUser) {
+            return next(new global_error_1.GlobalError("The user with this token no longer exists", 401));
+        }
+        // @ts-ignore
+        if (freshUser.changedPasswordAfter(payload.iat)) {
+            return next(new global_error_1.GlobalError("User recently changed password, Please log in again", 401));
+        }
+        //@ts-ignore
+        req.user = freshUser;
     }
-    // @ts-ignore
-    if (freshUser.changedPasswordAfter(payload.iat)) {
-        return next(new global_error_1.GlobalError("User recently changed password, Please log in again", 401));
+    catch (err) {
+        return next(new global_error_1.GlobalError("Session expired. Please log in again", 401));
     }
-    //@ts-ignore
-    req.user = freshUser;
     next();
 }));
 const restrictTo = (...roles) => {

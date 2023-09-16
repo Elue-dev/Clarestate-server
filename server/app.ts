@@ -40,10 +40,11 @@ app.use(
     origin: [
       "http://127.0.0.1:5173",
       "http://127.0.0.1:5174",
-      "http://localhost:5176",
+      "http://localhost:5174",
       "http://localhost:3000",
       "http://eluewisdom.com",
       "https://clarestate.netlify.app",
+      "https://eluedev.vercel.app",
       process.env.CLIENT_URL as string,
     ],
     credentials: true,
