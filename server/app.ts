@@ -32,6 +32,11 @@ const app = express();
 //@ts-ignore
 process.env.UV_THREADPOOL_SIZE = os.cpus().length;
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
+});
+
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "server/uploads")));
 app.use(
@@ -48,6 +53,12 @@ app.use(
     credentials: true,
   })
 );
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
+});
 
 app.use(express.json({ limit: "10kb" }));
 
