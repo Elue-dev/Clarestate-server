@@ -44,7 +44,7 @@ exports.contactUs = (0, handle_async_1.default)((req, res, next) => __awaiter(vo
         });
     }
 }));
-exports.contactMe = (0, handle_async_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.contactMe = (0, handle_async_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, email, message } = req.body;
     const subject = `Message from ${name} on Portfolio`;
     const send_to = process.env.ADMIN;

@@ -29,20 +29,29 @@ const app = (0, express_1.default)();
 // export { redisClient };
 //@ts-ignore
 process.env.UV_THREADPOOL_SIZE = os_1.default.cpus().length;
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Credentials", "true");
+    next();
+});
 app.use(express_1.default.static(path_1.default.join(__dirname, "public")));
 app.use(express_1.default.static(path_1.default.join(__dirname, "server/uploads")));
 app.use((0, cors_1.default)({
     origin: [
         "http://127.0.0.1:5173",
         "http://127.0.0.1:5174",
-        "http://localhost:5174",
-        "http://localhost:3000",
         "http://eluewisdom.com",
         "https://clarestate.netlify.app",
+        "https://elue-dev.github.io/portfolio",
+        "https://eluedev.vercel.app",
         process.env.CLIENT_URL,
     ],
     credentials: true,
 }));
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", req.headers.origin);
+    res.header("Access-Control-Allow-Credentials", "true");
+    next();
+});
 app.use(express_1.default.json({ limit: "10kb" }));
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
