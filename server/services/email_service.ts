@@ -8,8 +8,6 @@ const sendEmail = ({
   sent_from,
   reply_to,
 }: EmailType) => {
-  console.log({ env: process.env.EMAIL_HOST });
-
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: 587,
