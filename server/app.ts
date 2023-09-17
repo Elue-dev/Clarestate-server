@@ -34,14 +34,11 @@ process.env.UV_THREADPOOL_SIZE = os.cpus().length;
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "server/uploads")));
-
 app.use(
   cors({
     origin: [
       "http://127.0.0.1:5173",
       "http://127.0.0.1:5174",
-      "http://localhost:5174",
-      "http://localhost:3000",
       "http://eluewisdom.com",
       "https://clarestate.netlify.app",
       "https://elue-dev.github.io/portfolio",
