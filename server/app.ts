@@ -46,6 +46,7 @@ app.use(
       "http://127.0.0.1:5174",
       "http://eluewisdom.com",
       "https://clarestate.netlify.app",
+      "https://clarestate.vercel.app",
       "https://elue-dev.github.io/portfolio",
       "https://eluedev.vercel.app",
       process.env.CLIENT_URL as string,
